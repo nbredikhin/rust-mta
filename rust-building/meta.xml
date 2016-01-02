@@ -1,0 +1,27 @@
+<meta>
+	<oop>true</oop>
+	<script src="shared/utils.lua" type="shared"/>
+	
+	<script src="client/models.lua" type="client"/>
+	<script src="client/previews.lua" type="client"/>
+	<script src="client/snap_rules.lua" type="client"/>
+	<script src="client/placement.lua" type="client"/>
+
+	<file src="models/structures.txd"/>
+
+	<file src="models/foundation.dff"/>
+	<file src="models/foundation.col"/>
+	<file src="models/floor.dff"/>
+	<file src="models/floor.col"/>
+	<file src="models/wall_door.dff"/>
+	<file src="models/wall_door.col"/>
+	<file src="models/wall_window.dff"/>
+	<file src="models/wall_window.col"/>
+	<file src="models/wall.dff"/>
+	<file src="models/wall.col"/>
+	<file src="models/test.dff"/>
+
+	<file src="images/preview.png"/>
+	<file src="images/preview_door.png"/>
+	<file src="images/preview_window.png"/>
+</meta>
