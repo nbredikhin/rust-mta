@@ -12,7 +12,7 @@ ModelsSizes.wall.depth = 0.21
 
 ModelsSizes.floor = {}
 ModelsSizes.floor.width = ModelsSizes.foundation.width
-ModelsSizes.floor.height = ModelsSizes.foundation.height
+ModelsSizes.floor.height = ModelsSizes.wall.depth
 
 -- ID'ы замененных моделей
 ReplacedModelsIDs = {

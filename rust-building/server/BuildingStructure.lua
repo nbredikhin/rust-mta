@@ -1,15 +1,18 @@
 class "BuildingStructure"
 
+local directions = {"right", "left", "forward", "backward"}
+
 function BuildingStructure:BuildingStructure(position, rotation)
 	self.position = position
 	self.rotation = rotation
 
-	self.foundations = {}
+	self.floors = {}
 
 	-- Создание первого фундамента
-	self:AddFoundation(0, 0)
-	setElementRotation(self:GetFoundation(0, 0), 0, 0, self.rotation)
+	self:AddFloor(0, 0, 0)
+	setElementRotation(self:GetFloor(0, 0, 0), 0, 0, self.rotation)
 end
+
 
 local function getOppositeDirection(direction)
 	if direction == "right" then
@@ -59,78 +62,136 @@ local function convertDirectionNameToRotation(direction)
 	end
 end
 
-function BuildingStructure:GetFoundation(x, y)
-	if self.foundations[x] and self.foundations[x][y] then
-		return self.foundations[x][y]
+function BuildingStructure:GetFloor(x, y, h)
+	if self.floors[x] and self.floors[x][y] and self.floors[x][y][h] then
+		return self.floors[x][y][h]
 	end
 	return false
 end
 
-function BuildingStructure:AddFoundation(x, y)
+function BuildingStructure:SetFloor(x, y, h, floor)
+	if not self.floors[x] then
+		self.floors[x] = {}
+	end
+	if not self.floors[x][y] then
+		self.floors[x][y] = {}
+	end
+	if not self.floors[x][y][h] then
+		self.floors[x][y][h] = floor
+	end
+end
+
+function BuildingStructure:GetBaseFoundation()
+	return self:GetFloor(0, 0, 0)
+end
+
+function BuildingStructure:AddFloor(x, y, h)
+	if h < 0 then
+		return
+	end
 	-- Проверка на существование фундамента
-	if self:GetFoundation(x, y) then
-		outputDebugString("Foundation already exists")
+	if self:GetFloor(x, y, h) then
+		outputDebugString("Floor already exists")
 		return false
 	end
 
 	-- Проверка существования соседних фундаментов
-	if x ~= 0 or y ~= 0 then
-		if not self:GetFoundation(x - 1, y) and not self:GetFoundation(x + 1, y) and not self:GetFoundation(x, y - 1) and not self:GetFoundation(x, y + 1) then
+	if (x ~= 0 or y ~= 0) and (h == 0) then
+		if not self:GetFloor(x - 1, y, h) and not self:GetFloor(x + 1, y, h) and not self:GetFloor(x, y - 1, h) and not self:GetFloor(x, y + 1, h) then
 			outputDebugString("No neighboring foundations")
+			return false
+		end
+	end
+	
+	if h > 0 then
+		-- Проверка существования фундамента под полом
+		if not self:GetFloor(x, y, 0) then
+			outputDebugString("No foundations under floor")
+			return false
+		end
+		if self:GetWallsCount(self:GetFloor(x, y, h - 1)) < 2 then
+			outputDebugString("Not enough walls")
 			return false
 		end
 	end
 
 	-- Создание объекта
 	local objectPosition = self.position
-	local objectRotation = self.rotation
-	if x ~= 0 or y ~= 0 then
-		local baseFoundation = self:GetFoundation(0, 0)
-		objectPosition = Vector3(self.position.x, self.position.y, self.position.z)
-		objectPosition = objectPosition + ModelsSizes.foundation.width * x * baseFoundation.matrix:getRight()
-		objectPosition = objectPosition + ModelsSizes.foundation.width * y * baseFoundation.matrix:getForward()
+	if x ~= 0 or y ~= 0 or h ~= 0 then
+		local baseFloor = self:GetFloor(0, 0, 0)
+		objectPosition = Vector3(self.position.x, self.position.y, self.position.z + ModelsSizes.wall.height * h)
+		objectPosition = objectPosition + ModelsSizes.foundation.width * x * baseFloor.matrix:getRight() + ModelsSizes.foundation.width * y * baseFloor.matrix:getForward()
 	end
-
-	local object = createObject(ReplacedModelsIDs["foundation"], objectPosition, 0, 0, objectRotation)
-	object:setData("rust-foundation-offset", {x, y})
+	if h > 1 then
+		objectPosition = objectPosition + Vector3(0, 0, ModelsSizes.floor.height)
+	end
+	local modelName = "foundation"
+	if h > 0 then
+		modelName = "floor"
+	end
+	local object = createObject(ReplacedModelsIDs[modelName], objectPosition, 0, 0, self.rotation)
+	object:setData("rust-floor-offset", {x, y, h})
+	object:setData("rust-floor-foundation", object)
 
 	-- Добавление в массив фундаментов
-	if not self.foundations[x] then
-		self.foundations[x] = {}
-	end
-	self.foundations[x][y] = object
+	self:SetFloor(x, y, h, object)
 
 	return object
 end
 
-function BuildingStructure:GetFoundationWall(foundation, direction)
-	if not isElement(foundation) or not direction then
+function BuildingStructure:GetWall(floor, direction)
+	if not isElement(floor) or not direction then
 		return false
 	end
-	return foundation:getData("rust-foundation-wall_" .. tostring(direction))
+	return floor:getData("rust-floor-wall_" .. tostring(direction))
 end
 
-function BuildingStructure:AddWall(wallType, foundation, direction)
-	if not isElement(foundation) or not direction then
+function BuildingStructure:GetWallsCount(floor)
+	local floorOffset = floor:getData("rust-floor-offset")
+	local floorX, floorY, floorH = unpack(floorOffset)
+
+	local count = 0
+	for i, direction in ipairs(directions) do
+		local wallOffsetX, wallOffsetY = convertDirectionNameToOffset(direction)
+		if isElement(self:GetWall(floor, direction)) then
+			count = count + 1
+		else
+			local checkFloor = self:GetFloor(floorX + wallOffsetX, floorY + wallOffsetY, floorH)
+			local checkWall = self:GetWall(checkFloor, getOppositeDirection(direction))
+			if isElement(checkWall) then
+				count = count + 1
+			end
+		end
+	end
+	return count
+end
+
+-- Установка стены
+function BuildingStructure:AddWall(wallType, floor, direction)
+	if not isElement(floor) or not direction then
 		return false
 	end
 
-	local foundationOffset = foundation:getData("rust-foundation-offset")
-	if not foundationOffset then
+	local foundation = floor:getData("rust-floor-foundation")
+	if not isElement(foundation) then
+		return
+	end
+	local floorOffset = foundation:getData("rust-floor-offset")
+	if not floorOffset then
 		return false
 	end
-	local foundationX, foundationY = unpack(foundationOffset)
+	local floorX, floorY, floorH = unpack(floorOffset)
 	local wallOffsetX, wallOffsetY = convertDirectionNameToOffset(direction)
 
 	-- Проверка наличия стены
-	if self:GetFoundationWall(foundation, direction) then
+	if self:GetWall(floor, direction) then
 		outputDebugString("Wall already exists")
 		return false
 	end
-	-- Проверка наличия стены на соседнем фундаменте
-	local checkFoundation = self:GetFoundation(foundationX + wallOffsetX, foundationY + wallOffsetY)
-	if isElement(checkFoundation) then
-		local checkWall = self:GetFoundationWall(checkFoundation, getOppositeDirection(direction))
+	-- Проверка наличия стены на соседнем полу
+	local checkFloor = self:GetFloor(floorX + wallOffsetX, floorY + wallOffsetY, floorH)
+	if isElement(checkFloor) then
+		local checkWall = self:GetWall(checkFloor, getOppositeDirection(direction))
 		if isElement(checkWall) then
 			outputDebugString("Wall already exists")
 			return false
@@ -146,8 +207,12 @@ function BuildingStructure:AddWall(wallType, foundation, direction)
 	end
 
 	local objectPosition = foundation.position + getObjectDirection(foundation, direction) * ModelsSizes.foundation.width / 2
+	if floorH > 0 then
+		objectPosition = objectPosition + Vector3(0, 0, ModelsSizes.floor.height)
+	end
 	local object = createObject(ReplacedModelsIDs[wallName], objectPosition, Vector3(0, 0, foundation.rotation.z + convertDirectionNameToRotation(direction) + 90))
-	
-	object:setData("rust-wall-foundation", foundation)
-	foundation:setData("rust-foundation-wall_" .. tostring(direction), object)
+	object:setData("rust-wall-floor", floor)
+	floor:setData("rust-floor-wall_" .. tostring(direction), object)
+
+	return object
 end
