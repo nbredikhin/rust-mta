@@ -2,12 +2,13 @@ local screenWidth, screenHeight = guiGetScreenSize()
 local screenPoint = Vector2(screenWidth / 2, screenHeight / 2)
 local maxPlacementDistance = 15
 
-local placingObjectType = "foundation"
+local placingObjectType = ""
 
 local function getPlacementPosition()
 	if not placingObjectType or not snapRules[placingObjectType] then
 		return false, Vector3(), 0
 	end
+	local info
 	local lookingAtPosition = Vector3(getWorldFromScreenPosition(screenPoint.x, screenPoint.y, maxPlacementDistance))
 	local cameraPosition = Vector3(getCameraMatrix())
 	local isHit, wx, wy, wz, hitElement = processLineOfSight(cameraPosition.x, cameraPosition.y, cameraPosition.z, lookingAtPosition.x, lookingAtPosition.y, lookingAtPosition.z, true, false, false)
@@ -25,10 +26,11 @@ local function getPlacementPosition()
 		if hitObjectType then
 			if snapRules[placingObjectType][hitObjectType] then
 				if type(snapRules[placingObjectType][hitObjectType] == "function") then
-					local resultPosition, resultAngle = snapRules[placingObjectType][hitObjectType](hitElement, worldPosition, angle)
+					local resultPosition, resultAngle, resultInfo = snapRules[placingObjectType][hitObjectType](hitElement, worldPosition, angle)
 					if resultPosition then
 						worldPosition = resultPosition
 						angle = resultAngle
+						info = resultInfo
 					else
 						canPlace = false
 					end
@@ -42,7 +44,7 @@ local function getPlacementPosition()
 	elseif not snapRules[placingObjectType]["world"] then
 		canPlace = false
 	end
-	return canPlace, worldPosition, angle, hitElement
+	return canPlace, worldPosition, angle, hitElement, info
 end
 
 local function drawPlacingPreview(position, rotation, canPlace)
@@ -60,8 +62,18 @@ addEventHandler("onClientRender", root,
 	end
 )
 
+local function getFoundationPos(object, base)
+	local x1, y1, z1 = getElementPosition(base)
+	local x2, y2, z2 = getElementPosition(object)
+
+	local x = math.floor((x2 - x1) / modelsSizes.foundationWidth)
+	local y = math.floor((y2 - y1) / modelsSizes.foundationWidth)
+
+	return {x, y}
+end
+
 local function placeObject()
-	local canPlace, worldPosition, rotation, hitElement = getPlacementPosition()
+	local canPlace, worldPosition, rotation, targetObject, info = getPlacementPosition()
 	if not canPlace then
 		return
 	end
@@ -72,13 +84,21 @@ local function placeObject()
 
 	local object = createObject(modelsIDs[placingObjectType], worldPosition)
 	object:setData("rust-object-type", placingObjectType)
-	object.rotation = Vector3(0, 0, rotation + 90)
+	object.rotation = Vector3(0, 0, rotation)
 
-	if isElement(hitElement) then
-		local hitObjectType = hitElement:getData("rust-object-type")
-		if placingObjectType == "wall" and hitObjectType == "foundation" then
-			local foundationWallsCount = hitElement:getData("rust-walls-count") or 0
-			hitElement:setData("rust-walls-count", foundationWallsCount + 1)
+	if isElement(targetObject) then
+		local targetObjectType = targetObject:getData("rust-object-type")
+		if placingObjectType == "wall" and targetObjectType == "foundation" then
+			targetObject:setData("rust-wall_" .. info, object)
+		elseif placingObjectType == "foundation" and targetObjectType == "foundation" then
+			local base = targetObject:getData("rust-foundation-base")
+			object:setData("rust-foundation-base", base)
+			object:setData("rust-foundation-pos", getFoundationPos(object, base))
+		end
+	else
+		if placingObjectType == "foundation" then
+			object:setData("rust-foundation-base", object)
+			object:setData("rust-foundation-pos", {0, 0})
 		end
 	end
 end

@@ -1,6 +1,12 @@
 <meta>
 	<oop>true</oop>
+	<script src="shared/class.lua" type="shared"/>
 	<script src="shared/utils.lua" type="shared"/>
+	<script src="shared/models.lua" type="shared"/>
+
+	<script src="server/BuildingStructure.lua"/>
+	<script src="server/BuildingManager.lua"/>
+	<script src="server/main.lua"/>
 	
 	<script src="client/models.lua" type="client"/>
 	<script src="client/previews.lua" type="client"/>

@@ -32,6 +32,7 @@ local function drawBox(materialTop, materialSide, x, y, z, size_width, size_dept
 	if not color then 
 		color = tocolor(255, 255, 255)
 	end
+	rotation = rotation + 90
 	local radians = rotation / 180 * math.pi
 	local offsetX = math.cos(radians) * size_width / 2
 	local offsetY = math.sin(radians) * size_width / 2
