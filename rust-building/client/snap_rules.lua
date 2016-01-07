@@ -1,39 +1,39 @@
 snapRules = {}
 
 function getOppositeDirection(direction)
-	if direction == "r" then
-		return "l"
-	elseif direction == "l" then
-		return "r"
-	elseif direction == "f" then
-		return "b"
-	elseif direction == "b" then
-		return "f"
+	if direction == "right" then
+		return "left"
+	elseif direction == "left" then
+		return "right"
+	elseif direction == "forward" then
+		return "backward"
+	elseif direction == "backward" then
+		return "forward"
 	end
 end
 
 function getDirectionName(index)
 	local direction
 	if index == 1 then
-		direction = "f"
+		direction = "forward"
 	elseif index == 2 then
-		direction = "b"
+		direction = "backward"
 	elseif index == 3 then
-		direction = "r"
+		direction = "right"
 	elseif index == 4 then
-		direction = "l"
+		direction = "left"
 	end
 	return direction
 end
 
 function getDirectionOffset(direction)
-	if direction == "r" then
+	if direction == "right" then
 		return 1, 0
-	elseif direction == "l" then
+	elseif direction == "left" then
 		return -1, 0
-	elseif direction == "f" then
+	elseif direction == "forward" then
 		return 0, 1
-	elseif direction == "b" then
+	elseif direction == "backward" then
 		return 0, -1
 	end
 end
@@ -57,10 +57,10 @@ snapRules["foundation"]["foundation"] = function(object, position, rotation)
 	local direction = getDirectionName(minIndex)
 	local fnd = object:getData("rust-foundation_" .. direction)
 	if isElement(fnd) then
-		return false
+		--return false
 	end
 
-	position = object.position + minPoint * modelsSizes.foundationWidth - modelsOffsets.foundation
+	position = object.position + minPoint * ModelsSizes.foundation.width-- - modelsOffsets.foundation
 	rotation = object.rotation.z
 	return position, rotation, direction
 end
@@ -95,7 +95,7 @@ snapRules["wall"]["foundation"] = function(object, position, rotation)
 		end
 	end
 
-	position = object.position + minPoint * (modelsSizes.foundationWidth / 2)-- - modelsSizes.wallDepth / 2)
+	position = object.position + minPoint * (ModelsSizes.foundation.width / 2)-- - modelsSizes.wallDepth / 2)
 	rotation = -math.atan2(minPoint.x, minPoint.y) / math.pi * 180 + 90
 	return position, rotation, direction
 end
@@ -109,10 +109,20 @@ snapRules["floor"]["foundation"] = function(object, position, rotation)
 	if wallsCount < 1 then
 		--return false
 	end
-	position = object.position + object.matrix:getUp() * (modelsSizes.wallHeight)
+	position = object.position + object.matrix:getUp() * (ModelsSizes.wall.height)
 	return position, object.rotation.z
 end
 snapRules["floor"]["floor"] = function(object, position, rotation)
-	position = object.position + object.matrix:getUp() * (modelsSizes.wallHeight)
+	position = object.position + object.matrix:getUp() * (ModelsSizes.wall.height)
 	return position, object.rotation.z
 end
+snapRules["floor"]["wall"] = function(object, position, rotation)
+	object = object:getData("rust-wall-floor")
+	if not object then
+		return false
+	end
+	position = object.position + object.matrix:getUp() * (ModelsSizes.wall.height)
+	return position, object.rotation.z
+end
+snapRules["floor"]["wall_door"] = snapRules["floor"]["wall"]
+snapRules["floor"]["wall_window"] = snapRules["floor"]["wall"]

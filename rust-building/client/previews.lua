@@ -54,23 +54,23 @@ end
 local drawFunctions = {}
 
 drawFunctions["foundation"] = function(x, y, z, rotation, color)
-	drawBox(previews.material, previews.material, x, y, z - modelsSizes.foundationHeight / 2 + modelsOffsets.foundation.z, modelsSizes.foundationWidth, modelsSizes.foundationWidth, modelsSizes.foundationHeight, rotation, color)
+	drawBox(previews.material, previews.material, x, y, z - ModelsSizes.foundation.height / 2, ModelsSizes.foundation.width, ModelsSizes.foundation.width, ModelsSizes.foundation.height, rotation, color)
 end
 
 drawFunctions["wall"] = function(x, y, z, rotation, color)
-	drawBox(previews.material, previews.material, x, y, z + modelsSizes.wallHeight / 2, modelsSizes.wallWidth, modelsSizes.wallDepth, modelsSizes.wallHeight, rotation, color)
+	drawBox(previews.material, previews.material, x, y, z + ModelsSizes.wall.height / 2, ModelsSizes.wall.width, ModelsSizes.wall.depth, ModelsSizes.wall.height, rotation, color)
 end
 
 drawFunctions["wall_door"] = function(x, y, z, rotation, color)
-	drawBox(previews.material, previews.material_door, x, y, z + modelsSizes.wallHeight / 2, modelsSizes.wallWidth, modelsSizes.wallDepth, modelsSizes.wallHeight, rotation, color)
+	drawBox(previews.material, previews.material_door, x, y, z + ModelsSizes.wall.height / 2, ModelsSizes.wall.width, ModelsSizes.wall.depth, ModelsSizes.wall.height, rotation, color)
 end
 
 drawFunctions["wall_window"] = function(x, y, z, rotation,color)
-	drawBox(previews.material, previews.material_window, x, y, z + modelsSizes.wallHeight / 2, modelsSizes.wallWidth, modelsSizes.wallDepth, modelsSizes.wallHeight, rotation, color)
+	drawBox(previews.material, previews.material_window, x, y, z + ModelsSizes.wall.height / 2, ModelsSizes.wall.width, ModelsSizes.wall.depth, ModelsSizes.wall.height, rotation, color)
 end
 
 drawFunctions["floor"] = function(x, y, z, rotation, color)
-	drawBox(previews.material, previews.material, x, y, z + modelsSizes.floorHeight / 2, modelsSizes.floorWidth, modelsSizes.floorWidth, modelsSizes.floorHeight, rotation, color)
+	drawBox(previews.material, previews.material, x, y, z, ModelsSizes.floor.width, ModelsSizes.floor.width, ModelsSizes.floor.height, rotation, color)
 end
 
 function previews:drawObject(name, ...)

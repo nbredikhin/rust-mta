@@ -1,18 +1,23 @@
 class "BuildingStructure"
 
 local directions = {"right", "left", "forward", "backward"}
+local wallTypes = {"wall", "wall_door", "wall_window"}
+local floorMinWallsCount = 2
 
 function BuildingStructure:BuildingStructure(position, rotation)
 	self.position = position
 	self.rotation = rotation
 
 	self.floors = {}
+	self.id = -1
+end
 
+-- После того, как был присвоен ID
+function BuildingStructure:Setup()
 	-- Создание первого фундамента
 	self:AddFloor(0, 0, 0)
 	setElementRotation(self:GetFloor(0, 0, 0), 0, 0, self.rotation)
 end
-
 
 local function getOppositeDirection(direction)
 	if direction == "right" then
@@ -85,6 +90,56 @@ function BuildingStructure:GetBaseFoundation()
 	return self:GetFloor(0, 0, 0)
 end
 
+function BuildingStructure:AddFoundation(foundation, direction)
+	if not isElement(foundation) or not direction then
+		return
+	end
+	local floorOffset = foundation:getData("rust-floor-offset")
+	if not floorOffset then
+		return false
+	end
+	local floorX, floorY, floorH = unpack(floorOffset)
+	local offsetX, offsetY = convertDirectionNameToOffset(direction)
+	return self:AddFloor(floorX + offsetX, floorY + offsetY, floorH)
+end
+
+function BuildingStructure:AddFloorAboveFloor(floor)
+	if not isElement(floor) then
+		return 
+	end
+	local floorOffset = floor:getData("rust-floor-offset")
+	if not floorOffset then
+		return false
+	end
+	local floorX, floorY, floorH = unpack(floorOffset)
+	return self:AddFloor(floorX, floorY, floorH + 1)
+end
+
+function BuildingStructure:AddFloorToWall(wall)
+	if not isElement(wall) then
+		return 
+	end
+	local floor = wall:getData("rust-wall-floor")
+	return self:AddFloorAboveFloor(floor)
+end
+
+function BuildingStructure:GetNeighboringFloorsCount(x, y, h)
+	local count = 0
+	if self:GetFloor(x - 1, y, h) then
+		count = count + 1
+	end
+	if self:GetFloor(x + 1, y, h) then
+		count = count + 1 
+	end
+	if self:GetFloor(x, y - 1, h) then
+		count = count + 1
+	end
+	if self:GetFloor(x, y + 1, h) then
+		count = count + 1
+	end
+	return count
+end
+
 function BuildingStructure:AddFloor(x, y, h)
 	if h < 0 then
 		return
@@ -97,7 +152,7 @@ function BuildingStructure:AddFloor(x, y, h)
 
 	-- Проверка существования соседних фундаментов
 	if (x ~= 0 or y ~= 0) and (h == 0) then
-		if not self:GetFloor(x - 1, y, h) and not self:GetFloor(x + 1, y, h) and not self:GetFloor(x, y - 1, h) and not self:GetFloor(x, y + 1, h) then
+		if self:GetNeighboringFloorsCount(x, y, h) == 0 then
 			outputDebugString("No neighboring foundations")
 			return false
 		end
@@ -109,9 +164,15 @@ function BuildingStructure:AddFloor(x, y, h)
 			outputDebugString("No foundations under floor")
 			return false
 		end
-		if self:GetWallsCount(self:GetFloor(x, y, h - 1)) < 2 then
-			outputDebugString("Not enough walls")
+		-- Достаточно ли стен под фундаментом
+		local wallsCount = self:GetWallsCount(self:GetFloor(x, y, h - 1))
+		local floorsCount = self:GetNeighboringFloorsCount(x, y, h)
+		if wallsCount == 1 and floorsCount == 0 then
 			return false
+		elseif wallsCount < 1 then
+			if floorsCount < 3 then
+				return false
+			end
 		end
 	end
 
@@ -132,6 +193,13 @@ function BuildingStructure:AddFloor(x, y, h)
 	local object = createObject(ReplacedModelsIDs[modelName], objectPosition, 0, 0, self.rotation)
 	object:setData("rust-floor-offset", {x, y, h})
 	object:setData("rust-floor-foundation", object)
+	object:setData("rust-structure-type", "floor")
+	object:setData("rust-structure-id", self.id)
+	if h > 0 then
+		object:setData("rust-object-type", "floor")
+	else
+		object:setData("rust-object-type", "foundation")
+	end
 
 	-- Добавление в массив фундаментов
 	self:SetFloor(x, y, h, object)
@@ -198,20 +266,16 @@ function BuildingStructure:AddWall(wallType, floor, direction)
 		end
 	end
 
-	-- Установка стены
-	local wallName = "wall"
-	if wallType == "door" then
-		wallName = wallName .. "_door"
-	elseif wallType == "window" then
-		wallName = wallName .. "_window"
-	end
-
 	local objectPosition = foundation.position + getObjectDirection(foundation, direction) * ModelsSizes.foundation.width / 2
 	if floorH > 0 then
 		objectPosition = objectPosition + Vector3(0, 0, ModelsSizes.floor.height)
 	end
-	local object = createObject(ReplacedModelsIDs[wallName], objectPosition, Vector3(0, 0, foundation.rotation.z + convertDirectionNameToRotation(direction) + 90))
+	local object = createObject(ReplacedModelsIDs[wallType], objectPosition, Vector3(0, 0, foundation.rotation.z + convertDirectionNameToRotation(direction) + 90))
 	object:setData("rust-wall-floor", floor)
+	object:setData("rust-structure-type", "wall")
+	object:setData("rust-wall-type", wallType)
+	object:setData("rust-structure-id", self.id)
+	object:setData("rust-object-type", wallType)
 	floor:setData("rust-floor-wall_" .. tostring(direction), object)
 
 	return object

@@ -2,7 +2,7 @@ local screenWidth, screenHeight = guiGetScreenSize()
 local screenPoint = Vector2(screenWidth / 2, screenHeight / 2)
 local maxPlacementDistance = 15
 
-local placingObjectType = ""
+local placingObjectType = "foundation"
 
 local function getPlacementPosition()
 	if not placingObjectType or not snapRules[placingObjectType] then
@@ -17,6 +17,10 @@ local function getPlacementPosition()
 	-- Если точка, куда пытаются поставить объект, находится слишком далеко
 	if not wx or not wy then 
 		return false, Vector3(0, 0, -100), 0
+	end
+
+	if placingObjectType == "foundation" then
+		worldPosition = worldPosition + Vector3(0, 0, 0.3)
 	end
 
 	local angle = -math.atan2(cameraPosition.x - wx, cameraPosition.y - wy) / math.pi * 180
@@ -66,41 +70,18 @@ local function getFoundationPos(object, base)
 	local x1, y1, z1 = getElementPosition(base)
 	local x2, y2, z2 = getElementPosition(object)
 
-	local x = math.floor((x2 - x1) / modelsSizes.foundationWidth)
-	local y = math.floor((y2 - y1) / modelsSizes.foundationWidth)
+	local x = math.floor((x2 - x1) / ModelsSizes.foundation.width)
+	local y = math.floor((y2 - y1) / ModelsSizes.foundation.width)
 
 	return {x, y}
 end
 
 local function placeObject()
-	local canPlace, worldPosition, rotation, targetObject, info = getPlacementPosition()
+	local canPlace, worldPosition, rotation, targetObject, direction = getPlacementPosition()
 	if not canPlace then
 		return
 	end
-	if modelsOffsets[placingObjectType] then
-		worldPosition = worldPosition + modelsOffsets[placingObjectType]
-	end
-
-
-	local object = createObject(modelsIDs[placingObjectType], worldPosition)
-	object:setData("rust-object-type", placingObjectType)
-	object.rotation = Vector3(0, 0, rotation)
-
-	if isElement(targetObject) then
-		local targetObjectType = targetObject:getData("rust-object-type")
-		if placingObjectType == "wall" and targetObjectType == "foundation" then
-			targetObject:setData("rust-wall_" .. info, object)
-		elseif placingObjectType == "foundation" and targetObjectType == "foundation" then
-			local base = targetObject:getData("rust-foundation-base")
-			object:setData("rust-foundation-base", base)
-			object:setData("rust-foundation-pos", getFoundationPos(object, base))
-		end
-	else
-		if placingObjectType == "foundation" then
-			object:setData("rust-foundation-base", object)
-			object:setData("rust-foundation-pos", {0, 0})
-		end
-	end
+	triggerServerEvent("rust-onPlayerPlacingObject", resourceRoot, placingObjectType, {worldPosition.x, worldPosition.y, worldPosition.z}, rotation, targetObject, direction)
 end
 
 addEventHandler("onClientKey", root,
@@ -118,7 +99,7 @@ addCommandHandler("po",
 			outputChatBox("Введите название объекта")
 			return
 		end
-		if modelsIDs[name] then
+		if ReplacedModelsIDs[name] then
 			placingObjectType = name
 			outputChatBox("Выбран объект: " .. tostring(name))
 		else
