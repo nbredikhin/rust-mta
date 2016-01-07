@@ -1,0 +1,11 @@
+<meta>
+	<oop>true</oop>
+
+	<script src="models.lua" type="client"/>
+	<script src="drawing.lua" type="client"/>
+	<script src="client.lua" type="client"/>
+
+	<file src="images/lod.png"/>
+	<file src="images/lod_door.png"/>
+	<file src="images/lod_window.png"/>
+</meta>
