@@ -38,8 +38,22 @@ function getDirectionOffset(direction)
 	end
 end
 
+local foundationRaysCount = 8
 snapRules["foundation"] = {}
-snapRules["foundation"]["world"] = true
+snapRules["foundation"]["world"] = function(position, rotation)
+	for i = 1, foundationRaysCount do
+		local x = ModelsSizes.foundation.width / 2 * math.cos(rotation / 180 * math.pi + math.pi / foundationRaysCount * 2 * i)
+		local y = ModelsSizes.foundation.width / 2 * math.sin(rotation / 180 * math.pi + math.pi / foundationRaysCount * 2 * i)
+
+		local x1, y1, z1 = position.x, position.y, position.z - 0.1
+		local x2, y2, z2 = position.x + x, position.y + y, position.z - 0.1
+		
+		if not isLineOfSightClear(x1, y1, z1, x2, y2, z2) then
+			return false
+		end
+	end
+	return true
+end
 snapRules["foundation"]["foundation"] = function(object, position, rotation)
 	local offset = position - object.position
 	local directions = {object.matrix:getForward(), -object.matrix:getForward(), object.matrix:getRight(), -object.matrix:getRight()}
@@ -55,13 +69,20 @@ snapRules["foundation"]["foundation"] = function(object, position, rotation)
 		end
 	end
 	local direction = getDirectionName(minIndex)
-	local fnd = object:getData("rust-foundation_" .. direction)
-	if isElement(fnd) then
-		--return false
-	end
 
 	position = object.position + minPoint * ModelsSizes.foundation.width-- - modelsOffsets.foundation
 	rotation = object.rotation.z
+	for i = 1, foundationRaysCount do
+		local x = ModelsSizes.foundation.width / 2.1 * math.cos(rotation / 180 * math.pi + math.pi / foundationRaysCount * 2 * i)
+		local y = ModelsSizes.foundation.width / 2.1 * math.sin(rotation / 180 * math.pi + math.pi / foundationRaysCount * 2 * i)
+
+		local x1, y1, z1 = position.x, position.y, position.z - 0.03
+		local x2, y2, z2 = position.x + x, position.y + y, position.z - 0.03
+		
+		if not isLineOfSightClear(x1, y1, z1, x2, y2, z2) then
+			return false
+		end
+	end
 	return position, rotation, direction
 end
 

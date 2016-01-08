@@ -54,7 +54,7 @@ end
 local drawFunctions = {}
 
 drawFunctions["foundation"] = function(x, y, z, rotation, color)
-	drawBox(previews.material, previews.material, x, y, z - ModelsSizes.foundation.height / 2, ModelsSizes.foundation.width, ModelsSizes.foundation.width, ModelsSizes.foundation.height, rotation, color)
+	drawBox(previews.material, previews.material, x, y, z - ModelsSizes.foundation.height / 2 - 0.02, ModelsSizes.foundation.width, ModelsSizes.foundation.width, ModelsSizes.foundation.height, rotation, color)
 end
 
 drawFunctions["wall"] = function(x, y, z, rotation, color)

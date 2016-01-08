@@ -25,6 +25,7 @@ local function getPlacementPosition()
 
 	local angle = -math.atan2(cameraPosition.x - wx, cameraPosition.y - wy) / math.pi * 180
 	local canPlace = true
+	local isWorld = false
 	if isElement(hitElement) then
 		local hitObjectType = hitElement:getData("rust-object-type")
 		if hitObjectType then
@@ -42,30 +43,35 @@ local function getPlacementPosition()
 			else
 				canPlace = false
 			end
-		elseif not snapRules[placingObjectType]["world"] then
+		else
 			canPlace = false
 		end
-	elseif not snapRules[placingObjectType]["world"] then
-		canPlace = false
+	else
+		if snapRules[placingObjectType]["world"] then
+			canPlace = snapRules[placingObjectType]["world"](worldPosition, angle)
+			isWorld = true
+		else
+			canPlace = false
+		end
 	end
-	return canPlace, worldPosition, angle, hitElement, info
+	return canPlace, worldPosition, angle, hitElement, info, isWorld
 end
 
-local function drawPlacingPreview(position, rotation, canPlace)
-	dxDrawText("MTA Rust demo", 8, screenHeight - 45, screenWidth, screenHeight, tocolor ( 0, 0, 0, 100 ), 3, "default") 
-	dxDrawText("MTA Rust demo", 10, screenHeight - 47, screenWidth, screenHeight, tocolor ( 255, 255, 255, 255 ), 3, "default") 
-
-	local color = tocolor(0, 255, 0)
-	if not canPlace then
-		color = tocolor(255, 0, 0)
+local function drawPlacingPreview(position, rotation, canPlace, world)
+	local color = tocolor(255, 0, 0)
+	if canPlace then
+		color = tocolor(0, 255, 0)
+		if world then
+			color = tocolor(60, 120, 255)
+		end
 	end
 	previews:drawObject(placingObjectType, position.x, position.y, position.z, rotation, color)
 end
 
 addEventHandler("onClientRender", root,
 	function()
-		local canPlace, worldPosition, rotation = getPlacementPosition()
-		drawPlacingPreview(worldPosition, rotation, canPlace)
+		local canPlace, worldPosition, rotation, _, _, isWorld = getPlacementPosition()
+		drawPlacingPreview(worldPosition, rotation, canPlace, isWorld)
 	end
 )
 
