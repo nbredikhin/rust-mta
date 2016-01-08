@@ -18,6 +18,11 @@ ModelsSizes.stairs = {}
 ModelsSizes.stairs.width = ModelsSizes.foundation.width
 ModelsSizes.stairs.height = ModelsSizes.wall.height
 
+ModelsSizes.door = {}
+ModelsSizes.door.width = 1.3
+ModelsSizes.door.height = 2.3
+ModelsSizes.door.depth = ModelsSizes.wall.depth / 2
+
 -- ID'ы замененных моделей
 ReplacedModelsIDs = {
 	["foundation"] = 3865,

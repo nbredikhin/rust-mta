@@ -82,6 +82,9 @@ snapRules["foundation"]["foundation"] = function(object, position, rotation)
 		if not isLineOfSightClear(x1, y1, z1, x2, y2, z2) then
 			return false
 		end
+		if isLineOfSightClear(x2, y2, position.z, x2, y2, position.z - ModelsSizes.foundation.height) then
+			return false
+		end
 	end
 	return position, rotation, direction
 end
@@ -163,3 +166,8 @@ snapRules["stairs"]["foundation"] = function(object, position, rotation)
 	return position, object.rotation.z
 end 
 snapRules["stairs"]["floor"] = snapRules["stairs"]["foundation"]
+
+snapRules["door"] = {}
+snapRules["door"]["wall_door"] = function(object, position, rotation) 
+	return object.position, object.rotation.z - 90 
+end

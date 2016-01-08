@@ -2,7 +2,7 @@ local screenWidth, screenHeight = guiGetScreenSize()
 local screenPoint = Vector2(screenWidth / 2, screenHeight / 2)
 local maxPlacementDistance = 15
 
-local placingObjectType = "foundation"
+local placingObjectType = "door"
 
 local function getPlacementPosition()
 	if not placingObjectType or not snapRules[placingObjectType] then

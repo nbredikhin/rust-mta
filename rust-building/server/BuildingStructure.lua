@@ -326,3 +326,24 @@ function BuildingStructure:AddStairs(floor, rotation)
 	--object.rotation = floor.rotation + Vector3(0, 0, rotation)
 	return object
 end
+
+-- Установка двери
+function BuildingStructure:AddDoor(wall)
+	if not isElement(wall) then
+		return
+	end
+	if wall:getData("rust-wall-door") then
+		outputDebugString("Door already exists")
+		return false
+	end
+	local objectPosition = wall.position + wall.matrix:getForward() * ModelsSizes.door.width / 2
+	local object = createObject(ReplacedModelsIDs["door"], objectPosition, wall.rotation)
+	wall:setData("rust-wall-door", object)
+	object:setData("rust-door-closed-angle", object.rotation.z)
+	object:setData("rust-door-wall", wall)
+	object:setData("rust-structure-type", "door")
+	object:setData("rust-structure-id", self.id)
+	object:setData("rust-object-type", "door")
+
+	return object
+end
