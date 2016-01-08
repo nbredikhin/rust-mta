@@ -58,14 +58,17 @@ drawFunctions["foundation"] = function(x, y, z, rotation, color)
 end
 
 drawFunctions["wall"] = function(x, y, z, rotation, color)
+	rotation = rotation + 90
 	drawBox(previews.material, previews.material, x, y, z + ModelsSizes.wall.height / 2, ModelsSizes.wall.width, ModelsSizes.wall.depth, ModelsSizes.wall.height, rotation, color)
 end
 
 drawFunctions["wall_door"] = function(x, y, z, rotation, color)
+	rotation = rotation + 90
 	drawBox(previews.material, previews.material_door, x, y, z + ModelsSizes.wall.height / 2, ModelsSizes.wall.width, ModelsSizes.wall.depth, ModelsSizes.wall.height, rotation, color)
 end
 
 drawFunctions["wall_window"] = function(x, y, z, rotation,color)
+	rotation = rotation + 90
 	drawBox(previews.material, previews.material_window, x, y, z + ModelsSizes.wall.height / 2, ModelsSizes.wall.width, ModelsSizes.wall.depth, ModelsSizes.wall.height, rotation, color)
 end
 
