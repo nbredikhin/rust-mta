@@ -38,16 +38,16 @@ local function drawBox(materialTop, materialSide, x, y, z, size_width, size_dept
 	local offsetY = math.sin(radians) * size_width / 2
 
 	drawPlaneHorizontal(materialTop, x, y, z + size_height / 2, size_width, size_depth, rotation, color)
-	drawPlaneHorizontal(materialTop, x, y, z - size_height / 2, size_width, size_depth, rotation, color)
+	--drawPlaneHorizontal(materialTop, x, y, z - size_height / 2, size_width, size_depth, rotation, color)
 
-	drawPlaneVertical(materialSide, x + offsetX, y + offsetY, z, size_depth, size_height, rotation, color)
-	drawPlaneVertical(materialSide, x - offsetX, y - offsetY, z, size_depth, size_height, rotation, color)
+	--drawPlaneVertical(materialSide, x + offsetX, y + offsetY, z, size_depth, size_height, rotation, color)
+	--drawPlaneVertical(materialSide, x - offsetX, y - offsetY, z, size_depth, size_height, rotation, color)
 
 	radians = radians + math.pi / 2
 	offsetX = math.cos(radians) * size_depth / 2
 	offsetY = math.sin(radians) * size_depth / 2
 
-	drawPlaneVertical(materialSide, x + offsetX, y + offsetY, z, size_width, size_height, rotation + 90, color)
+	--drawPlaneVertical(materialSide, x + offsetX, y + offsetY, z, size_width, size_height, rotation + 90, color)
 	drawPlaneVertical(materialSide, x - offsetX, y - offsetY, z, size_width, size_height, rotation + 90, color)
 end
 

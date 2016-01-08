@@ -25,7 +25,10 @@
 	<file src="models/wall_window.col"/>
 	<file src="models/wall.dff"/>
 	<file src="models/wall.col"/>
-	<file src="models/test.dff"/>
+	<file src="models/stairs.dff"/>
+	<file src="models/stairs.col"/>
+	<file src="models/door.dff"/>
+	<file src="models/door.col"/>
 
 	<file src="images/preview.png"/>
 	<file src="images/preview_door.png"/>

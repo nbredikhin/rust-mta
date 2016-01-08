@@ -73,6 +73,10 @@ drawFunctions["floor"] = function(x, y, z, rotation, color)
 	drawBox(previews.material, previews.material, x, y, z, ModelsSizes.floor.width, ModelsSizes.floor.width, ModelsSizes.floor.height, rotation, color)
 end
 
+drawFunctions["stairs"] = function(x, y, z, rotation, color)
+	drawBox(previews.material, previews.material, x, y, z, ModelsSizes.foundation.width, ModelsSizes.foundation.width, ModelsSizes.foundation.height, rotation, color)
+end
+
 function previews:drawObject(name, ...)
 	if drawFunctions[name] then
 		drawFunctions[name](...)

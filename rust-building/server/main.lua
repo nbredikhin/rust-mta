@@ -1,11 +1,5 @@
 local function initializeResource()
 	buildingManager = BuildingManager()
-
-	-- Тестовая постройка
-	local structure = buildingManager:CreateStructure(Vector3(1780, -2532, 13), 45)
-
-	structure:AddFloor(0, 0, 1)
-
 end
 
 local function handlePlayerPlacingObject(objectType, position, rotation, targetObject, direction)
@@ -35,6 +29,10 @@ local function handlePlayerPlacingObject(objectType, position, rotation, targetO
 				structure:AddFloorAboveFloor(targetObject)
 			elseif targetObject:getData("rust-structure-type") == "wall" then
 				structure:AddFloorToWall(targetObject)
+			end
+		elseif objectType == "stairs" then
+			if targetObject:getData("rust-structure-type") == "floor" then
+				structure:AddStairs(targetObject, rotation)
 			end
 		end
 	end

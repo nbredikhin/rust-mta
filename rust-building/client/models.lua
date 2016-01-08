@@ -5,7 +5,9 @@ local txd = engineLoadTXD("models/structures.txd")
 for fileName, id in pairs(ReplacedModelsIDs) do
 	engineImportTXD(txd, id)
 	col = engineLoadCOL("models/" .. fileName ..".col")
-	engineReplaceCOL(col, id)
+	if col then
+		engineReplaceCOL(col, id)
+	end
 	dff = engineLoadDFF("models/" .. fileName ..".dff")
 	engineReplaceModel(dff, id)
 end

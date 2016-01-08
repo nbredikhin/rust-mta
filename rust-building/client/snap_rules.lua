@@ -100,6 +100,14 @@ snapRules["wall"]["foundation"] = function(object, position, rotation)
 	return position, rotation, direction
 end
 snapRules["wall"]["floor"] = snapRules["wall"]["foundation"]
+snapRules["wall"]["stairs"] = snapRules["wall"]["foundation"]--[[function(object, position, rotation)
+	position, rotation, direction = snapRules["wall"]["foundation"](object, position, rotation)
+	if not position then
+		return false
+	end
+	position = position + Vector3(0, 0, ModelsSizes.stairs.height / 2)
+	return position, rotation, direction
+end]]
 snapRules["wall_door"] = snapRules["wall"]
 snapRules["wall_window"] = snapRules["wall"]
 
@@ -126,3 +134,11 @@ snapRules["floor"]["wall"] = function(object, position, rotation)
 end
 snapRules["floor"]["wall_door"] = snapRules["floor"]["wall"]
 snapRules["floor"]["wall_window"] = snapRules["floor"]["wall"]
+
+snapRules["stairs"] = {}
+snapRules["stairs"]["foundation"] = function(object, position, rotation)
+	position = object.position + object.matrix:getUp() * (ModelsSizes.foundation.height / 2)
+	rotation = math.floor(rotation / 90) * 90 + 180
+	return position, object.rotation.z
+end 
+snapRules["stairs"]["floor"] = snapRules["stairs"]["foundation"]

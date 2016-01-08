@@ -140,7 +140,7 @@ function BuildingStructure:GetNeighboringFloorsCount(x, y, h)
 	return count
 end
 
-function BuildingStructure:AddFloor(x, y, h)
+function BuildingStructure:AddFloor(x, y, h, isStairs)
 	if h < 0 then
 		return
 	end
@@ -184,11 +184,14 @@ function BuildingStructure:AddFloor(x, y, h)
 		objectPosition = objectPosition + ModelsSizes.foundation.width * x * baseFloor.matrix:getRight() + ModelsSizes.foundation.width * y * baseFloor.matrix:getForward()
 	end
 	if h > 1 then
-		objectPosition = objectPosition + Vector3(0, 0, ModelsSizes.floor.height)
+		--objectPosition = objectPosition + Vector3(0, 0, ModelsSizes.floor.height)
 	end
 	local modelName = "foundation"
 	if h > 0 then
 		modelName = "floor"
+		if isStairs then
+			modelName = "stairs"
+		end 
 	end
 	local object = createObject(ReplacedModelsIDs[modelName], objectPosition, 0, 0, self.rotation)
 	object:setData("rust-floor-offset", {x, y, h})
@@ -196,7 +199,11 @@ function BuildingStructure:AddFloor(x, y, h)
 	object:setData("rust-structure-type", "floor")
 	object:setData("rust-structure-id", self.id)
 	if h > 0 then
-		object:setData("rust-object-type", "floor")
+		if isStairs then
+			object:setData("rust-object-type", "stairs")
+		else
+			object:setData("rust-object-type", "floor")
+		end
 	else
 		object:setData("rust-object-type", "foundation")
 	end
@@ -234,6 +241,30 @@ function BuildingStructure:GetWallsCount(floor)
 	return count
 end
 
+function BuildingStructure:CheckWall(floor, direction)
+	local floorOffset = floor:getData("rust-floor-offset")
+	if not floorOffset then
+		return false
+	end
+	local floorX, floorY, floorH = unpack(floorOffset)
+	local wallOffsetX, wallOffsetY = convertDirectionNameToOffset(direction)
+
+	-- Проверка наличия стены
+	if self:GetWall(floor, direction) then
+		return true
+	end
+	-- Проверка наличия стены на соседнем полу
+	local checkFloor = self:GetFloor(floorX + wallOffsetX, floorY + wallOffsetY, floorH)
+	if isElement(checkFloor) then
+		local checkWall = self:GetWall(checkFloor, getOppositeDirection(direction))
+		if isElement(checkWall) then
+			return true
+		end
+	end
+
+	return false
+end
+
 -- Установка стены
 function BuildingStructure:AddWall(wallType, floor, direction)
 	if not isElement(floor) or not direction then
@@ -244,31 +275,28 @@ function BuildingStructure:AddWall(wallType, floor, direction)
 	if not isElement(foundation) then
 		return
 	end
-	local floorOffset = foundation:getData("rust-floor-offset")
+	local floorOffset = floor:getData("rust-floor-offset")
 	if not floorOffset then
 		return false
 	end
 	local floorX, floorY, floorH = unpack(floorOffset)
-	local wallOffsetX, wallOffsetY = convertDirectionNameToOffset(direction)
 
-	-- Проверка наличия стены
-	if self:GetWall(floor, direction) then
-		outputDebugString("Wall already exists")
-		return false
-	end
-	-- Проверка наличия стены на соседнем полу
-	local checkFloor = self:GetFloor(floorX + wallOffsetX, floorY + wallOffsetY, floorH)
-	if isElement(checkFloor) then
-		local checkWall = self:GetWall(checkFloor, getOppositeDirection(direction))
-		if isElement(checkWall) then
-			outputDebugString("Wall already exists")
+	-- Проверка наличия стены под стеной, если ставим на лестницу
+	if floorH > 0 and floor:getData("rust-object-type") == "stairs" then
+		if not self:CheckWall(self:GetFloor(floorX, floorY, floorH - 1), direction) then
+			outputDebugString("No wall under wall")
 			return false
 		end
+	end
+	-- Проверка наличия стены
+	if self:CheckWall(floor, direction) then
+		outputDebugString("Wall already exists")
+		return false
 	end
 
 	local objectPosition = foundation.position + getObjectDirection(foundation, direction) * ModelsSizes.foundation.width / 2
 	if floorH > 0 then
-		objectPosition = objectPosition + Vector3(0, 0, ModelsSizes.floor.height)
+		--objectPosition = objectPosition + Vector3(0, 0, ModelsSizes.floor.height)
 	end
 	local object = createObject(ReplacedModelsIDs[wallType], objectPosition, Vector3(0, 0, foundation.rotation.z + convertDirectionNameToRotation(direction) + 90))
 	object:setData("rust-wall-floor", floor)
@@ -278,5 +306,23 @@ function BuildingStructure:AddWall(wallType, floor, direction)
 	object:setData("rust-object-type", wallType)
 	floor:setData("rust-floor-wall_" .. tostring(direction), object)
 
+	return object
+end
+
+-- Установка лестницы
+function BuildingStructure:AddStairs(floor, rotation)
+	if not isElement(floor) then
+		return false
+	end
+	if not rotation then
+		rotation = floor.rotation.z
+	end
+	local x, y, h = unpack(floor:getData("rust-floor-offset"))
+	local object = self:AddFloor(x, y, h + 1, true)
+	if not object then
+		return false
+	end
+	rotation = math.floor(rotation / 90) * 90
+	--object.rotation = floor.rotation + Vector3(0, 0, rotation)
 	return object
 end

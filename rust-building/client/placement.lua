@@ -52,6 +52,9 @@ local function getPlacementPosition()
 end
 
 local function drawPlacingPreview(position, rotation, canPlace)
+	dxDrawText("MTA Rust demo", 8, screenHeight - 45, screenWidth, screenHeight, tocolor ( 0, 0, 0, 100 ), 3, "default") 
+	dxDrawText("MTA Rust demo", 10, screenHeight - 47, screenWidth, screenHeight, tocolor ( 255, 255, 255, 255 ), 3, "default") 
+
 	local color = tocolor(0, 255, 0)
 	if not canPlace then
 		color = tocolor(255, 0, 0)
