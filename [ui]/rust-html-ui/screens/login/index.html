@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+	<head>
+        <meta charset="utf-8"> 
+        <link rel="stylesheet" href="../bootstrap.min.css">
+        <script src="../mta.js"></script>
+	</head>
+	<body style="background: rgba(0,0,0,0)">
+        <div class="container" style="background: rgba(0,0,0,0)">
+            <div class="col-lg-4 col-lg-offset-4" style="min-height: 100%; min-height: 100vh; display: flex; align-items: center;">
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                        <h1 class="text-center">Добро пожаловать!</h1>                  
+                        <div class="col-lg-10 col-lg-offset-1">
+                            <p>Заполните поля ниже и нажмите "Войти"</p>
+                            <form action="ajax.html" method="post">      
+                                <div class="form-group">
+                                    <label>Имя пользователя</label>
+                                    <input name="username" class="form-control" type="text" placeholder="Имя пользователя">
+                                </div>
+                                <div class="form-group">
+                                    <label>Пароль</label>
+                                    <input name="password" class="form-control" type="password" placeholder="Пароль">
+                                </div>
+                                <p class="text-center"><button type="submit" class="btn btn-default btn-primary btn-lg">Войти</button></p>
+                            </form>
+                            <p class="text-center"><a href="#">Регистрация</a></p>                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+	</body>
+</html>
+
