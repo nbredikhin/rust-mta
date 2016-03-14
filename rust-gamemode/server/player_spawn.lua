@@ -3,6 +3,45 @@ local spawn_positions = {
 	{0, 0, 3} -- Точка спавна по умолчанию
 }
 
+local function get_player_sleeper(player)
+	if not isElement(player) then return false end
+	local sleeper_ped_id = exports["rust-accounts"]:get_data(player, "sleeper_ped_id")
+	if not sleeper_ped_id then
+		return false
+	end
+	return getElementByID(sleeper_ped_id)
+end
+
+local function despawn_player_sleeper(player)
+	if not isElement(player) then return false end
+	local ped = get_player_sleeper(player)
+	if isElement(ped) then
+		destroyElement(ped)
+		exports["rust-accounts"]:set_data(player, "sleeper_ped_id", false)
+		return true
+	end
+	return false
+end
+
+local function spawn_player_sleeper(player)
+	if not isElement(player) then return false end
+	local account = exports["rust-accounts"]:get_account(player)
+	if not account then
+		return false
+	end
+
+	-- Удалить существующего педа
+	despawn_player_sleeper(player)
+
+	-- Спавн нового педа
+	local ped = createPed(player.model, player.position, player.rotation.z, false)
+	ped:setID(tostring(account.name))
+	exports["rust-accounts"]:set_data(player, "sleeper_ped_id", ped.id)
+	-- TODO: Анимация
+	-- TODO: Убийство спящего педа
+	return ped
+end
+
 local function spawn_player(player, spawn_type)
 	-- Проврека входных аргументов
 	if not isElement(player) then return false end
@@ -12,10 +51,13 @@ local function spawn_player(player, spawn_type)
 	if player:getData("spawn_state") then return false end
 
 	-- Спавн игрока
-	-- TODO: Проверка на наличие спящего педа
-	local sleeper_ped = player:getData("sleeper_ped")
+	local sleeper_ped = get_player_sleeper(player)
 	if isElement(sleeper_ped) then
-		-- TODO: Спавн около спящего педа, удаление спящего педа
+		-- Спавн рядом со спящим педом
+		player:spawn(sleeper_ped.position, sleeper_ped.rotation)
+		player.health = sleeper_ped.health
+		-- Удалить педа
+		despawn_player_sleeper(player)
 	else
 		-- TODO: Проверка наличия у игрока дома (кровать или спальный мешок)
 		local player_has_home = false
@@ -24,10 +66,12 @@ local function spawn_player(player, spawn_type)
 			local spawn_position = spawn_positions[math.random(1, #spawn_positions)]
 			player:spawn(unpack(spawn_position))
 		else
-			-- TODO: Спавн дома
+			-- TODO: Спавн в доме
 		end
 	end
-	player:setData("spawn_state", true)	
+	player:fadeCamera(true)
+	player:setCameraTarget()
+	player:setData("spawn_state", true)
 	return true
 end
 
@@ -37,9 +81,7 @@ local function despawn_player(player)
 	-- Если игрок уже заспавнен
 	if not player:getData("spawn_state") then return false end
 
-	-- TODO: Создать спящего педа
-	local ped = false
-	player:setData("sleeper_ped", ped)
+	spawn_player_sleeper(player)
 
 	player:setData("spawn_state", false)
 	return true
@@ -48,8 +90,10 @@ end
 local function spawn_all_players()
 	local players_table = getElementsByType("player")
 	for i, player in ipairs(players_table) do
-		player:setData("spawn_state", false)
-		spawn_player(player)
+		if exports["rust-accounts"]:is_logged_in(player) then
+			player:setData("spawn_state", false)
+			spawn_player(player)
+		end
 	end
 	return true
 end
@@ -69,6 +113,7 @@ addEventHandler("onResourceStart", resourceRoot, function ()
 	spawn_all_players()
 end)
 
+addEvent("rust_player_login", false)
 addEventHandler("rust_player_login", root, function ()
 	spawn_player(source)
 end)

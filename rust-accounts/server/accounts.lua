@@ -1,5 +1,39 @@
 accounts = {}
 
+-- Возвращает аккаунт игрока, если он не гость
+function accounts.get_account(player)
+	if not player.account then
+		return false
+	end
+	if player.account.guest then
+		return false
+	else
+		return player.account
+	end
+end
+
+function accounts.get_data(player, data_name)
+	if not isElement(player) or not data_name then
+		return false
+	end
+	local account = accounts.get_account(player)
+	if not account then 
+		return false
+	end
+	return account:getData(data_name)
+end
+
+function accounts.set_data(player, data_name, value)
+	if not isElement(player) or not data_name then
+		return false
+	end
+	local account = accounts.get_account(player)
+	if not account then 
+		return false
+	end
+	return account:setData(data_name, value)
+end
+
 -- bool success, bool is_bad_password
 function accounts.login(player, username, password)
 	if not isElement(player) then
