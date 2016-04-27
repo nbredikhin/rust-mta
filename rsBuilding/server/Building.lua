@@ -10,6 +10,32 @@ function Building:init(position, foundation)
 	self:addPart(foundation, 0, 0, 0, 0)
 end
 
+function Building:containsPartOfType(partClass, x, y, z)
+	local parts = self:getPartsAt(x, y, z)
+	if not parts then
+		return false
+	end
+	for part in pairs(parts) do
+		if part:class():inherits(partClass) or part:class() == partClass then
+			return true
+		end
+	end
+	return false
+end
+
+function Building:findPart(partClass, x, y, z, direction)
+	local parts = self:getPartsAt(x, y, z)
+	if not parts then
+		return false
+	end
+	for part in pairs(parts) do
+		if (part:class():inherits(partClass) or part:class() == partClass) and (part.direction == direction) then
+			return part
+		end
+	end
+	return false
+end
+
 function Building:addPart(part, x, y, z, direction)
 	check("Building:addPart", {
 		{part, "table"},
@@ -35,7 +61,7 @@ function Building:addPart(part, x, y, z, direction)
 
 	-- Check is placement allowed by other parts in this node
 	for p in pairs(self:getPartsAt(x, y, z)) do
-		if not part:checkPart(p) then
+		if not part:checkPart(p, x, y, z, direction) then
 			return false
 		end
 	end

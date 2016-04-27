@@ -5,7 +5,7 @@ function Part:init()
 end
 
 function Part:checkPlacement(building, x, y, z, direction)
-
+	return true
 end
 
 function Part:checkPart(part)
