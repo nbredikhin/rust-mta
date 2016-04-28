@@ -21,3 +21,18 @@ function Wall:checkPart(part)
 	end
 	return true
 end
+
+function Wall:spawn()
+	self.super:spawn()
+
+	local position = self.building:getLocalPosition(self.x, self.y, self.z)
+	position = position + Vector3(0, 0, -BUILDING_NODE_HEIGHT / 2)
+	position = position + getMatrixDirection(self.building.matrix, self.direction) * BUILDING_NODE_WIDTH / 2
+	
+	local rotation = Vector3(0, 0, 90 * self.direction - 90)
+	self.element = createObject(
+		exports.rsModels:getModelFromName("wall"), 
+		self.building:getWorldPosition(position),
+		self.building:getWorldRotation(rotation)
+	)
+end

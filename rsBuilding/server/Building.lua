@@ -1,16 +1,46 @@
 Building = newclass "Building"
 
-function Building:init(position, foundation)
+function Building:init(position, rotation, foundation)
 	check("Building:new", {
 		{position, "userdata"},
+		{rotation, "number"},
 		{foundation, "table"}
 	})	
 	self.grid = {}
 	self.position = position
+	self.matrix = Matrix(position)
+	self.matrix:setRotation(Vector3(0, 0, rotation))
 	self:addPart(foundation, 0, 0, 0, 0)
 end
 
+function Building:getWorldPosition(position)
+	check("Building:getWorldPosition", {position, "userdata"})	
+	return self.matrix:transformPosition(position)
+end
+
+function Building:getWorldRotation(rotation)
+	check("Building:getWorldRotation", {rotation, "userdata"})	
+	return self.matrix:transformDirection(rotation)
+end
+
+function Building:getLocalPosition(x, y, z)
+	check("Building:getLocalPosition", {
+		{x, "number"},
+		{y, "number"},
+		{z, "number"}
+	})			
+	return 	Vector3(x * BUILDING_NODE_WIDTH,
+			y * BUILDING_NODE_WIDTH,
+			z * BUILDING_NODE_HEIGHT + BUILDING_NODE_HEIGHT / 2)
+end
+
 function Building:containsPartOfType(partClass, x, y, z)
+	check("Building:containsPartOfType", {
+		{partClass, "table"},
+		{x, "number"},
+		{y, "number"},
+		{z, "number"}
+	})		
 	local parts = self:getPartsAt(x, y, z)
 	if not parts then
 		return false
@@ -24,6 +54,12 @@ function Building:containsPartOfType(partClass, x, y, z)
 end
 
 function Building:findPart(partClass, x, y, z, direction)
+	check("Building:findPart", {
+		{partClass, "table"},
+		{x, "number"},
+		{y, "number"},
+		{z, "number"}
+	})	
 	local parts = self:getPartsAt(x, y, z)
 	if not parts then
 		return false

@@ -34,7 +34,7 @@ function getDirectionFromName(name)
 end
 
 function getDirectionOffset(direction)
-	check("getDirectionName", {direction, "number"})
+	check("getDirectionOffset", {direction, "number"})
 	if direction == 0 then
 		return 0, 1
 	elseif direction == 1 then
@@ -45,4 +45,21 @@ function getDirectionOffset(direction)
 		return -1, 0
 	end
 	return false
+end
+
+function getMatrixDirection(matrix, direction)
+	check("getMatrixDirection", {
+		{matrix, "userdata"},
+		{direction, "number"}
+	})
+	direction = direction % 4
+	if direction == 0 then
+		return matrix.forward
+	elseif direction == 1 then
+		return matrix.right
+	elseif direction == 2 then
+		return -matrix.forward
+	elseif direction == 3 then
+		return -matrix.right
+	end
 end
