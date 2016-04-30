@@ -4,7 +4,7 @@ function Floor:checkPlacement(building, x, y, z, direction)
 	if z <= 0 then
 		return false
 	end
-	if not building:containsPartOfType(Floor, x, y, z - 1) then
+	if not building:containsPartOfType(Floor, x, y, 0) then
 		return false
 	end
 
@@ -15,9 +15,10 @@ function Floor:checkPlacement(building, x, y, z, direction)
 		return false
 	end
 	for part in pairs(parts) do
-		if part:class():inherits(Wall) or part:class() == Wall then
+		if isPartOfType(part, Wall) then
 			wallsCount = wallsCount + 1
 		end
+		outputChatBox("part")
 	end
 	-- Walls under neighboring floors
 	for i = 0, 3 do
@@ -27,6 +28,7 @@ function Floor:checkPlacement(building, x, y, z, direction)
 		end
 	end
 	if wallsCount < 2 then
+		outputChatBox(wallsCount)
 		return false
 	end
 	return true
@@ -34,7 +36,7 @@ end
 
 function Floor:checkPart(part, x, y, z, direction)
 	-- Can't place floor alongside another floor
-	if part:class():inherits(Floor) then
+	if isPartOfType(part, Floor) then
 		return false
 	end
 	return true

@@ -1,25 +1,27 @@
 Building = newclass "Building"
 
-function Building:init(position, rotation, foundation)
+function Building:init(position, rotationZ, foundation)
 	check("Building:new", {
 		{position, "userdata"},
-		{rotation, "number"},
+		{rotationZ, "number"},
 		{foundation, "table"}
 	})	
 	self.grid = {}
 	self.position = position
+	self.rotationZ = rotationZ
 	self.matrix = Matrix(position)
-	self.matrix:setRotation(Vector3(0, 0, rotation))
 	self:addPart(foundation, 0, 0, 0, 0)
 end
 
 function Building:getWorldPosition(position)
-	check("Building:getWorldPosition", {position, "userdata"})	
-	return self.matrix:transformPosition(position)
+	check("Building:getWorldPosition", {position, "userdata"})
+	position = rotateVector(position, self.rotationZ)
+	return self.position + position
 end
 
 function Building:getWorldRotation(rotation)
-	check("Building:getWorldRotation", {rotation, "userdata"})	
+	check("Building:getWorldRotation", {rotation, "userdata"})
+	rotation = rotation + Vector3(0, 0, self.rotationZ)
 	return self.matrix:transformDirection(rotation)
 end
 
@@ -46,7 +48,7 @@ function Building:containsPartOfType(partClass, x, y, z)
 		return false
 	end
 	for part in pairs(parts) do
-		if part:class():inherits(partClass) or part:class() == partClass then
+		if isPartOfType(part, partClass) then
 			return true
 		end
 	end
@@ -65,7 +67,7 @@ function Building:findPart(partClass, x, y, z, direction)
 		return false
 	end
 	for part in pairs(parts) do
-		if (part:class():inherits(partClass) or part:class() == partClass) and (part.direction == direction) then
+		if isPartOfType(part, partClass) and (part.direction == direction) then
 			return part
 		end
 	end
