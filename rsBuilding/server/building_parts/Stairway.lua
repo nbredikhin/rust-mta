@@ -9,8 +9,15 @@ function Stairway:checkPlacement(building, x, y, z, direction)
 	return true
 end
 
-function Stairway:spawn()
-	self.super:spawn()
+function Stairway:checkPart(part, x, y, z, direction)
+	if isPartOfType(part, Stairway) then
+		return false
+	end
+	return true
+end
+
+function Stairway:spawn(building, x, y, z, direction)
+	self.super:spawn(building, x, y, z, direction)
 
 	local position = self.building:getLocalPosition(self.x, self.y, self.z)
 	position = position + Vector3(0, 0, BUILDING_NODE_HEIGHT / 2)

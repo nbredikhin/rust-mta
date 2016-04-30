@@ -12,8 +12,13 @@ function Part:checkPart(part)
 	return true
 end
 
-function Part:spawn()
+function Part:spawn(building, x, y, z, direction)
 	self.spawned = true
+	self.building = building
+	self.x = x
+	self.y = y
+	self.z = z
+	self.direction = direction
 end
 
 function Part:destroy()

@@ -8,8 +8,8 @@ function Foundation:checkPlacement(building, x, y, z, direction)
 	return true
 end
 
-function Foundation:spawn()
-	self.spawned = true
+function Foundation:spawn(building, x, y, z, direction)
+	self.super.super:spawn(building, x, y, z, direction)
 
 	local position = self.building:getLocalPosition(self.x, self.y, self.z)
 	position = position + Vector3(0, 0, -BUILDING_NODE_HEIGHT / 2)

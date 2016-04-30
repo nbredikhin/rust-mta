@@ -42,11 +42,11 @@ function Floor:checkPart(part, x, y, z, direction)
 	return true
 end
 
-function Floor:spawn()
-	self.super:spawn()
+function Floor:spawn(building, x, y, z, direction)
+	self.super:spawn(building, x, y, z, direction)
 
 	local position = self.building:getLocalPosition(self.x, self.y, self.z)
-	position = position + Vector3(0, 0, -BUILDING_NODE_HEIGHT / 2)
+	position = position + Vector3(0, 0, -BUILDING_NODE_HEIGHT / 2 - partSize.floor.z)
 	local rotation = Vector3(0, 0, 90 * self.direction)
 	self.element = createObject(
 		exports.rsModels:getModelFromName("floor"), 

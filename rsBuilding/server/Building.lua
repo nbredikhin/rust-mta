@@ -106,12 +106,7 @@ function Building:addPart(part, x, y, z, direction)
 
 	-- Setup part
 	self.grid[x][y][z][part] = true
-	part.building = self
-	part.x = x
-	part.y = y
-	part.z = z
-	part.direction = direction
-	part:spawn()
+	part:spawn(self, x, y, z, direction)
 	return true
 end
 
