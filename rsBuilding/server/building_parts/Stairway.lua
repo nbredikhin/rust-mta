@@ -27,4 +27,5 @@ function Stairway:spawn(building, x, y, z, direction)
 		self.building:getWorldPosition(position),
 		self.building:getWorldRotation(rotation)
 	)
+	self.element:setData("rsBuilding.type", self:class():name())
 end

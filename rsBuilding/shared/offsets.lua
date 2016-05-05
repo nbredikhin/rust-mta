@@ -4,8 +4,8 @@ BUILDING_NODE_HEIGHT = 4
 partSize = {}
 
 partSize.floor = {
-	x = BUILDING_NODE_SIZE,
-	y = BUILDING_NODE_SIZE, 
+	x = BUILDING_NODE_WIDTH,
+	y = BUILDING_NODE_WIDTH, 
 	z = 0.21
 }
 

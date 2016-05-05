@@ -107,6 +107,8 @@ function Building:addPart(part, x, y, z, direction)
 	-- Setup part
 	self.grid[x][y][z][part] = true
 	part:spawn(self, x, y, z, direction)
+	part.element:setData("rsBuilding.position", Vector3(x, y, z))
+	part.element:setData("rsBuilding.direction", direction)
 	return true
 end
 
