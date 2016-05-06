@@ -1,5 +1,5 @@
 local TEST_BUILDING_POS = Vector3 { x = -1234.372, y = -163.901, z = 14.148 }
-local TEST_BUILDING_ROT = 0
+local TEST_BUILDING_ROT = 45
 
 outputChatBox(" ")
 local baseFoundation = Foundation:new()

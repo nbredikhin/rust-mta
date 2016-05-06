@@ -5,7 +5,8 @@ replacedModelsIds = {
 	["wall_window"] = 1624,
 	["floor"] = 3397,
 	["stairs"] = 1660,
-	["door"] = 3391
+	["door"] = 3391,
+	["hatchet"] = 339,
 }
 
 function getModelFromName(name)

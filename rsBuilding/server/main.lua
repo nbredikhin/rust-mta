@@ -4,8 +4,8 @@ local partTypes = {
 	["wall"] = Wall
 }
 
-addEvent("rsBuilding.addPart", true)
-addEventHandler("rsBuilding.addPart", resourceRoot, function (partType, position, rotation, element, direction)
+addEvent("rsBuilding.build", true)
+addEventHandler("rsBuilding.build", resourceRoot, function (partType, position, rotation, element, direction)
 	if not element and partType == "foundation" then
 		-- New building
 	end
