@@ -114,4 +114,4 @@ bindKey("mouse2", "down", function ()
 	end
 end)
 
-setActivePartType("Foundation")
+--setActivePartType("Foundation")
