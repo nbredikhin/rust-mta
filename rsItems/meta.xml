@@ -1,0 +1,11 @@
+<meta>
+	<oop>true</oop>
+    <script src="shared/items.lua" type="shared" />
+    <script src="shared/shared.lua" type="shared" />
+   
+    <file src="img/wood.png" type="client"/>
+
+    <script src="client/img.lua" type="client"/>
+
+    <export function="getItems" type="shared" />
+</meta>

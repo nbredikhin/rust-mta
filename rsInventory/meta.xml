@@ -1,0 +1,27 @@
+<meta>
+	<oop>true</oop>
+	 <!-- this is for possible translations -->
+	<script src="shared/text.lua" type="shared" />
+
+	<!-- the img for an item without img -->
+	<file src="client/unknown.png" type="client"/>
+
+	<!-- client scripts -->
+	<script src="client/utils.lua" type="client" />
+    <script src="client/settings.lua" type="client" />
+    <script src="client/inventory.lua" type="client" />
+    <script src="client/hotbar.lua" type="client" />
+    <script src="client/items.lua" type="client" />
+
+    <!-- server scripts -->
+    <script src="server/server.lua" type="server" />
+
+    <!-- client exports, descriptions of functions are inside the client.lua file -->
+    <script src="exports/client.lua" type="client"/>
+    <export function="setVisible" type="client"/>
+    <export function="isVisible" type="client"/>
+    <export function="setHotbarVisible" type="client"/>
+    <export function="isHotbarVisible" type="client"/>
+    <export function="setInventoryVisible" type="client"/>
+    <export function="isInventoryVisible" type="client"/>
+</meta>
