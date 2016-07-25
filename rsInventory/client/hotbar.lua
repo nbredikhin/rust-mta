@@ -1,4 +1,6 @@
 ﻿hotbar = createSlotsRow(settings.hotbarY, true)
+hotbar.x1, hotbar.y1 = hotbar[1].x, hotbar[1].y
+hotbar.x2, hotbar.y2 = hotbar[#hotbar].x + hotbar[#hotbar].w, hotbar[#hotbar].y + hotbar[#hotbar].h
 hotbar.visible = true
 hotbar.selected = 1
 

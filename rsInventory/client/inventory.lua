@@ -72,16 +72,22 @@ end
 --
 
 -- inventory block
-local textX, textY
+inventory.pos = {}
 for i = 1, settings.inventoryRows do
 	local yPos = settings.inventoryY + (settings.heigth + settings.spacing) * i
 	local row = createSlotsRow(yPos)
 
 	if i == 1 then
-		textX, textY = row[1].x, row[1].y - 32 * scaleFactor
+		inventory.x1, inventory.y1 = row[1].x, row[1].y
+	end
+
+	if i == settings.inventoryRows then
+		inventory.x2, inventory.y2 = row[#row].x + settings.width, row[#row].y + settings.heigth
 	end
 end
 function drawInventoryBlock()
+	local textX, textY = inventory.x1, inventory.y1 - 32 * scaleFactor
+
 	dxDrawText(text.inventory, textX, textY, textX, textY, 0xFFFFFFFF, 2 * scaleFactor, "default-bold")
 
 	for _, slot in ipairs(inventory) do

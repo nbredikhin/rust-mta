@@ -32,29 +32,64 @@ function itemsResourceStart()
 	inventory[27].item = items[3]
 end
 
-function getSlotUnderCursor(cursorX, cursorY)
-	-- by item attached to the cursor
-	if movingItem then
-		local w, h = settings.width, settings.heigth
-		local x, y = cursorX - movingOffsetX + w/2, cursorY - movingOffsetY + h/2
-		
-		for _, slot in ipairs(inventory) do
-			if x > slot.x and x < slot.x + slot.w then
-				if y > slot.y and y < slot.y + slot.h then
-					return slot
-				end
-			end
-		end
-	end	
-
-	-- by cursor
+function getSlotByPoint(x, y)
+	-- get slot under point
 	for _, slot in ipairs(inventory) do
-		if cursorX > slot.x and cursorX < slot.x + slot.w then
-			if cursorY > slot.y and cursorY < slot.y + slot.h then
+		if x > slot.x and x < slot.x + slot.w then
+			if y > slot.y and y < slot.y + slot.h then
 				return slot
 			end
 		end
 	end
+
+	-- exclude spacing between inventory slots
+	if (x > inventory.x1 and x < inventory.x2)
+	and (y > inventory.y1 and y < inventory.y2) then
+		return getClosiestSlotToCursor(x, y)
+	end
+
+	-- exclude spacing between hotbar slots
+	if (x > hotbar.x1 and y < hotbar.x2)
+	and (y > hotbar.y1 and y < hotbar.y2) then
+		return getClosiestSlotToCursor(x, y)
+	end
+end
+
+function getSlotUnderCursor(cursorX, cursorY)
+	local slot
+
+	-- by moving item center
+	if movingItem then
+		local w, h = settings.width, settings.heigth
+		local x, y = cursorX - movingOffsetX + w/2, cursorY - movingOffsetY + h/2
+
+		slot = getSlotByPoint(x, y)
+	end
+
+	-- by cursor
+	slot = slot or getSlotByPoint(cursorX, cursorY)
+
+	return slot
+end
+
+function getClosiestSlotToCursor(cursorX, cursorY)
+	local x1, y1 = cursorX, cursorY
+
+	local minDistance = 32767
+	local closiestSlot
+
+	for _, slot in ipairs(inventory) do
+		local x2, y2 = slot.x + slot.w/2, slot.y + slot.h/2
+
+		local distance = math.sqrt((x2 - x1)^2 + (y2 - y1)^2)
+
+		if distance < minDistance then 
+			minDistance = distance
+			closiestSlot = slot
+		end
+	end
+
+	return closiestSlot
 end
 
 -- getting a slot under cursor
@@ -126,8 +161,9 @@ addEventHandler("onClientKey", root,
 						movingItem = nil
 					end
 				else -- if no slot under cursor, drop item
-					movingItem = nil
 					outputChatBox("drop item")
+
+					movingItem = nil
 				end
 			end
 		end
