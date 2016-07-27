@@ -52,6 +52,10 @@ addEventHandler("onClientKey", root,
 			return
 		end
 
+		if isConsoleActive() then
+			return
+		end
+
 		local isChange = false
 		for _, key in ipairs(hotbar.keys) do
 			if keyPresssed == tostring(key) then

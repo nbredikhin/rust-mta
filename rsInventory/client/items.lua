@@ -1,37 +1,3 @@
-local items = {}
-local itemsData
-
-addEventHandler("onClientResourceStart", root,
-	function(resourceStartred)
-		if not resourceStarted == resource then
-			return
-		end
-
-		local resource = getResourceFromName("rsItems")
-		if not resource or not resource.state == "running" then
-			outputDebugString("rsItems resource is not running", 2)
-		else
-			itemsResourceStart()
-		end
-	end
-)
-
-function itemsResourceStart()
-	itemsData = exports["rsItems"]:getItems()
-
-	if #items > 1 then
-		return
-	end
-
-	items[1] = itemsData["resource_wood"]
-	items[2] = itemsData["weapon_stone"]
-	items[3] = itemsData["resource_wood"]
-
-	inventory[1].item = items[1]
-	inventory[2].item = items[2]
-	inventory[27].item = items[3]
-end
-
 function getSlotByPoint(x, y)
 	-- get slot under point
 	for _, slot in ipairs(inventory) do
@@ -107,7 +73,7 @@ addEventHandler("onClientRender", root,
 	end
 )
 
--- selecting or moving items
+-- selecting, moving, dropping items
 addEventHandler("onClientKey", root,
 	function(keyPressed, keyDown)
 		if keyPressed == "mouse1" then
@@ -117,6 +83,8 @@ addEventHandler("onClientKey", root,
 				if not slotUnderCursor then
 					return
 				end
+
+				outputChatBox(slotUnderCursor.index .. " " .. tostring(slotUnderCursor.item and slotUnderCursor.item.id or "no item"))
 
 				-- if there is an item in the slot under cursor, move it, do nothing otherwise
 				if slotUnderCursor.item then
@@ -143,9 +111,11 @@ addEventHandler("onClientKey", root,
 						outputChatBox("drop item")
 					end
 
+					selectedItem = movingItem
+
 					movingItem = nil
 
-					outputChatBox("select")
+					saveOccupiedSlots()
 					return
 				end
 
@@ -165,6 +135,8 @@ addEventHandler("onClientKey", root,
 
 					movingItem = nil
 				end
+
+				saveOccupiedSlots()
 			end
 		end
 	end
@@ -192,34 +164,114 @@ addEventHandler("onClientPreRender", root,
 
 		local cursorX, cursorY = getCursorPosition()
 
-		dxDrawImage(cursorX - movingOffsetX, cursorY - movingOffsetY, settings.width, settings.heigth, movingItem.img)
+		dxDrawImage(cursorX - movingOffsetX, cursorY - movingOffsetY, settings.width, settings.heigth, getImgForItem(movingItem))
 	end
 )
 
-addEventHandler("onClientResourceStart", root,
-	function(resourceStarted)
-		if resourceStarted.name == "rsItems" then
-			itemsResourceStart()
+function refreshItems()
+	--outputChatBox("refresh")
 
-			for _, itemData in pairs(itemsData) do
-				for _, item in ipairs(items) do
-					if item.name == itemData.name then
-						for key, value in pairs(itemData) do
-							item[key] = value
-						end
+	inventory.items = localPlayer:getData("items")
+
+	-- удаляем итемы из слотов при их исчезновении из даты (вроде ссылки, а автоматически не работает, хуй знает короч)
+	for _, slot in ipairs(inventory) do
+		if slot.item then
+			if not inventory.items[slot.item.id] then
+				slot.item = nil
+			end
+		end
+	end
+
+	-- расставляем итемы по их слотам, если они не расставлены (при заходе на сервер, например)
+	local occupiedSlots = localPlayer:getData("occupiedSlots") or {}
+
+	for slotIndex, slotItemID in pairs(occupiedSlots) do
+		local slot = inventory[tonumber(slotIndex)]
+		if slot then
+			local item = inventory.items[tostring(slotItemID)] or inventory.items[tonumber(slotItemID)]
+			if item then
+				if movingItem then
+					if movingItem.id ~= item.id then
+						slot.item = item
 					end
+				else
+					slot.item = item
+				end
+			else
+				--outputDebugString("no item with ID " .. tostring(slotItemID) .. " in inventory", 2)
+			end
+		end
+	end
+
+	
+	-- проверяем, все ли итемы из даты лежат в инвентаре, если нет, то ищем им слоты, если нет слотов, выбрасываем итемы
+	for _, item in pairs(inventory.items) do
+		if not(movingItem and movingItem.id == item.id) then
+
+			local itemIsInInventory
+			for _, slot in ipairs(inventory) do
+
+				if slot.item and tostring(slot.item.id) == tostring(item.id) then
+					itemIsInInventory = true
+					break
+				end
+			end
+
+			if not itemIsInInventory then
+				local slot = getEmptySlot()
+				if slot then
+					slot.item = item
+				else
+					outputChatBox("drop item")
 				end
 			end
 		end
 	end
+
+	-- сохранение положения предметов в инвентаре
+	saveOccupiedSlots()
+
+	localPlayer:setData("occupiedSlots", occupiedSlots)
+end
+
+function saveOccupiedSlots()
+	local occupiedSlots = {}
+
+	for _, slot in ipairs(inventory) do
+		if slot.item then
+			occupiedSlots[slot.index] = slot.item.id
+		end
+	end
+
+	localPlayer:setData("occupiedSlots", occupiedSlots)
+end
+
+--setTimer(refreshItems, 100, 0)
+
+addEventHandler("onClientElementDataChange", localPlayer, 
+	function(dataName)
+
+		if dataName ~= "items" then
+			return
+		end
+
+		refreshItems()
+	end
 )
 
-addEventHandler("onClientResourceStop", root,
-	function(resourceStopped)
-		if resourceStopped.name == "rsItems" then
-			for _, item in ipairs(items) do
-				item.img = nil
-			end
+addCommandHandler("t",
+	function()
+		local i = 0
+		for _ in pairs(inventory.items) do
+			i = i + 1
 		end
+
+		outputChatBox(i .. " items in inventory")
+	end
+)
+
+addEventHandler("onClientResourceStart", resource.rootElement, 
+	function()
+		setTimer(refreshItems, 100, 1)
 	end
 )

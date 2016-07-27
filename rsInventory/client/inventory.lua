@@ -4,6 +4,12 @@ inventory = {
 	key = "e"
 }
 
+
+function getImgForItem(item)
+	local itemsImgData = root:getData("itemsImgData") or {}
+	return itemsImgData[item.key] and itemsImgData[item.key].img or unknownImg
+end
+
 function drawSlot(slot)
 	-- border
 	dxDrawRectangle(slot.x - 1, slot.y - 1, slot.w + 2, slot.h + 2, 0x11000000)
@@ -15,6 +21,10 @@ function drawSlot(slot)
 		if slot == slotUnderCursor then
 			color = tocolor(settings.colorHover[1], settings.colorHover[2], settings.colorHover[3], inventory.alpha)
 		end
+
+		if slot.item and slot.item.id == (selectedItem and selectedItem.id or nil) then
+			color = tocolor(settings.colorSelected[1], settings.colorSelected[2], settings.colorSelected[3], inventory.alpha)
+		end
 	end
 	
 	-- slot
@@ -22,12 +32,7 @@ function drawSlot(slot)
 
 	-- item
 	if slot.item then
-		if not slot.item.img then
-			slot.item.img = unknownImg
-		end
-
-		
-		dxDrawImage(slot.x, slot.y, slot.w, slot.h, slot.item.img)
+		dxDrawImage(slot.x, slot.y, slot.w, slot.h, getImgForItem(slot.item))
 	end
 end
 
@@ -86,7 +91,7 @@ for i = 1, settings.inventoryRows do
 	end
 end
 function drawInventoryBlock()
-	local textX, textY = inventory.x1, inventory.y1 - 32 * scaleFactor
+	local textX, textY = inventory.x1, inventory.y1 - settings.titleSpacing
 
 	dxDrawText(text.inventory, textX, textY, textX, textY, 0xFFFFFFFF, 2 * scaleFactor, "default-bold")
 
@@ -122,3 +127,11 @@ addEventHandler("onClientKey", root,
 		end
 	end
 )
+
+function getEmptySlot()
+	for _, slot in ipairs(inventory) do
+		if not slot.item then
+			return slot
+		end
+	end
+end

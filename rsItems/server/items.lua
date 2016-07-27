@@ -1,13 +1,14 @@
 items = {}
 
 items["resource_wood"] = {
-	img = "wood.png",
+	imgName = "wood.png",
 	name = "Древесина",
+	description = "Из древесины можно создать различные орудия труда или построить дом",
 	stack = 1
 }
 
 items["weapon_stone"] = {
---	img = "stone.png",
+--	imgName = "stone.png",
 	name = "Камень",
 	damage = {
 		-- body
@@ -32,7 +33,7 @@ items["weapon_stone"] = {
 }
 
 items["weapon_stonehatchet"] = {
---	img = "stonehatchet.png",
+--	imgName = "stonehatchet.png",
 	name = "Каменный топор",
 	damage = {
 		-- body

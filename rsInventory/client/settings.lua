@@ -10,9 +10,11 @@ settings = {
     colorHover = {64, 128, 255},
     row = 6,
     inventoryRows = 4,
-    blockSpacing = 32,
+    blockSpacing = 48 * scaleFactor,
     inventoryBGColor = tocolor(100, 100, 100, 240),
-    visible = true
+    selectedItemIMGSize = 128 * scaleFactor,
+    visible = true,
+    titleSpacing = 32 * scaleFactor
 }
-settings.hotbarY = screenH - settings.heigth - settings.blockSpacing * scaleFactor
+settings.hotbarY = screenH - settings.heigth - settings.blockSpacing
 settings.inventoryY = settings.hotbarY - settings.blockSpacing - (settings.heigth + settings.spacing) * (settings.inventoryRows + 1)

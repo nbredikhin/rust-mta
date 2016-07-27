@@ -3,8 +3,9 @@
 	 <!-- this is for possible translations -->
 	<script src="shared/text.lua" type="shared" />
 
-	<!-- the img for an item without img -->
-	<file src="client/unknown.png" type="client"/>
+	<!-- files -->
+	<file src="files/unknown.png" type="client"/>
+    <file src="files/tahoma.ttf" type="client"/>
 
 	<!-- client scripts -->
 	<script src="client/utils.lua" type="client" />
@@ -12,9 +13,12 @@
     <script src="client/inventory.lua" type="client" />
     <script src="client/hotbar.lua" type="client" />
     <script src="client/items.lua" type="client" />
+    <script src="client/selected_item.lua" type="client" />
 
     <!-- server scripts -->
+    <script src="server/utils.lua" type="server" />
     <script src="server/server.lua" type="server" />
+    <script src="server/players.lua" type="server" />
 
     <!-- client exports, descriptions of functions are inside the client.lua file -->
     <script src="exports/client.lua" type="client"/>
