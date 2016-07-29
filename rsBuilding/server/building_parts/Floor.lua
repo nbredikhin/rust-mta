@@ -52,5 +52,5 @@ function Floor:spawn(building, x, y, z, direction)
 		self.building:getWorldPosition(position),
 		self.building:getWorldRotation(rotation)
 	)
-	self.element:setData("rsBuilding.type", self:class():name())
+	self.element:setData("rsBuilding.type", "floor")
 end

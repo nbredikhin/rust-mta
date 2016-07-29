@@ -25,6 +25,7 @@
 	<script type="server" src="server/test.lua"/>
 	<script type="server" src="server/main.lua"/>
 
+	<script type="client" src="client/PartSnap.lua"/>
 	<script type="client" src="client/PartPreview.lua"/>
 	<script type="client" src="client/main.lua"/>
 

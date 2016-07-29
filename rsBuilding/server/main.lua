@@ -5,13 +5,14 @@ local partTypes = {
 }
 
 addEvent("rsBuilding.build", true)
-addEventHandler("rsBuilding.build", resourceRoot, function (partType, position, rotation, element, direction)
-	if not element and partType == "foundation" then
-		-- New building
+addEventHandler("rsBuilding.build", resourceRoot, function (targetObject, partType, x, y, z, rotation, direction)
+	if not targetObject and partType == "foundation" then
+		local foundation = Foundation:new()
+		local building = Building:new(Vector3(x, y, z), rotation, foundation)
 	end
 
-	if isElement(element) then
-		local position = element:getData("rsBuilding.position")
+	if isElement(targetObject) then
+		local position = targetObject:getData("rsBuilding.position")
 		if not position then
 			return
 		end
