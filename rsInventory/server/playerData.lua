@@ -4,7 +4,7 @@ for _, player in ipairs(getElementsByType("player")) do
 	playerItems[player] = {}
 end
 
---[[
+
 function savePlayerDataIntoAccount(player, account)
 	if not player or not account then
 		return
@@ -24,6 +24,8 @@ function savePlayerDataIntoAccount(player, account)
 	account:setData("inventory.items", toJSON(items))
 
 	playerItems[player] = nil
+
+	refreshClientData(player)
 end
 
 function loadPlayerData(player, account)
@@ -43,6 +45,8 @@ function loadPlayerData(player, account)
 	else
 		playerItems[player] = {}
 	end
+
+	refreshClientData(player)
 end
 
 
@@ -66,9 +70,13 @@ addEventHandler("onPlayerQuit", root,
 
 addEventHandler("onResourceStart", resource.rootElement,
 	function()
-		for _, player in ipairs(getElementsByType("player")) do
-			loadPlayerData(player, player.account)
-		end
+		setTimer(
+			function()
+				for _, player in ipairs(getElementsByType("player")) do
+					loadPlayerData(player, player.account)
+				end
+			end, 500, 1
+		)
 	end
 )
 
@@ -78,4 +86,4 @@ addEventHandler("onResourceStop", resource.rootElement,
 			savePlayerDataIntoAccount(player, player.account)
 		end
 	end
-)]]--
+)

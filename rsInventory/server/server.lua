@@ -1,6 +1,5 @@
 ﻿local itemsData
-
-
+local itemsOnTheGround = {}
 
 -- getting itemCounter and itemsData
 addEventHandler("onResourceStart", root,
@@ -45,8 +44,24 @@ function createItem(itemKey, amount)
 end
 
 function dropPlayerItem(player, item)
-	-- watch out right usage in giveItemToPlayer function (dropping item which isn't actually inside inventary)
-	outputChatBox("drop item")
+	if not player or not item or not playerItems[player] then
+		return
+	end
+
+	for index, playerItem in ipairs(playerItems[player]) do
+		if playerItem == item then
+			table.remove(playerItems[player], index)
+			break
+		end
+	end
+
+	refreshClientData(client)
+
+	item.droppedTickCount = getTickCount()
+
+	table.insert(itemsOnTheGround, item)
+
+	-- TODO: placing item near the player
 end
 
 function giveItemToPlayer(item, player)
@@ -59,9 +74,33 @@ function giveItemToPlayer(item, player)
 		outputDebugString("", 2)
 		return
 	end
+	
+	for _, inventoryItem in ipairs(playerItems[player]) do
+		if inventoryItem.key == item.key then
+			-- если есть место в стаке
+			if inventoryItem.amount < inventoryItem.stack then
+				-- количество оставшегося места в стаке
+				local difference = inventoryItem.stack - inventoryItem.amount
 
+				-- если итем, который мы хотим положить в стак, вмещается, так и делаем, на этом функция закончена
+				if item.amount <= difference then
+					inventoryItem.amount = inventoryItem.amount + item.amount
+					refreshClientData(player)
+					return
+				-- если он не вмещается, кладем то, что вмещается в этот стак и идем дальше по циклу
+				else
+					inventoryItem.amount = inventoryItem.amount + difference
+					item.amount = item.amount - difference
+				end
+			end
+		end
+	end
+
+	-- получаем массив из новых айтемов (из одного итема 2400 дерева получаем 3 итема 1000 1000 400)
+	-- либо получаем массив, состоящий из одного айтема, если ничего фиксить не надо было
 	local items = fixItemStacking(item)
 
+	-- раскладываем новые айтемы по инвентарю
 	for _, item in ipairs(items) do
 		local slot = getEmptySlot(player)
 		if slot then
@@ -153,5 +192,116 @@ end
 addCommandHandler("items", 
 	function(player, _, itemKey, amount)
 		createItemByKeyForPlayer(itemKey, player, tonumber(amount))
+	end
+)
+
+function getPlayerItemByID(player, id)
+	local items = playerItems[player]
+	if not items then
+		return
+	end
+
+	for _, item in ipairs(items) do
+		if item.id == id then
+			return item
+		end
+	end
+end
+
+function getSlotItem(player, slot)
+	local items = playerItems[player]
+	if not items then
+		return
+	end
+
+	for _, item in ipairs(items) do
+		if item.slot == slot then
+			return item
+		end
+	end
+end
+
+addEventHandler("inventory.onClientMoveItem", resourceRoot,
+	function(itemID, slot)
+		if not client then
+			return
+		end
+
+		local items = playerItems[client]
+		if not items then
+			return
+		end
+
+		local item = getPlayerItemByID(client, itemID)
+		if not item then
+			return
+		end
+
+		local itemToSwapWith = getSlotItem(client, slot)
+		if itemToSwapWith == item then
+			return
+		end
+
+		if not itemToSwapWith then -- just move
+			item.slot = slot
+		else -- swap/stack
+			-- если ключи совпадают, стакаем их
+			if itemToSwapWith.key == item.key then
+				-- если есть место в стаке
+				if itemToSwapWith.amount < itemToSwapWith.stack then
+					-- количество оставшегося места в стаке
+					local difference = itemToSwapWith.stack - itemToSwapWith.amount
+
+					-- если итем, который мы хотим положить в стак, вмещается, так и делаем
+					if item.amount <= difference then
+						itemToSwapWith.amount = itemToSwapWith.amount + item.amount
+						item.amount = 0
+
+						-- старый итем нужно отправить в небытие
+						for index, itemToRemove in ipairs(playerItems[client]) do
+							if item == itemToRemove then
+								table.remove(playerItems[client], index)
+								break
+							end
+						end
+					-- если не вмещается, то кладем то, что вмещается, а остальное остается на месте
+					else
+						itemToSwapWith.amount = itemToSwapWith.amount + difference
+						item.amount = item.amount - difference
+					end
+				-- если места в стаке нет, то свапаем
+				else
+					outputChatBox("swap")
+					itemToSwapWith.slot = item.slot
+					item.slot = slot
+				end
+			-- если ключи не совпадают, свапаем их
+			else
+				itemToSwapWith.slot = item.slot
+				item.slot = slot
+			end
+		end
+
+		refreshClientData(client)
+	end
+)
+
+addEventHandler("inventory.onClientDropItem", resourceRoot,
+	function(itemID)
+		if not client then
+			return
+		end
+
+		local items = playerItems[client]
+		if not items then
+			return
+		end
+
+		local item = getPlayerItemByID(client, itemID)
+		if not item then
+			return
+		end
+
+		dropPlayerItem(client, item)
 	end
 )

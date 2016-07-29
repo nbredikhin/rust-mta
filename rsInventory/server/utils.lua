@@ -1,3 +1,6 @@
+addEvent("inventory.onClientMoveItem", true)
+addEvent("inventory.onClientDropItem", true)
+
 local dataPath = "server\\data.json"
 
 function deepcopy(orig)

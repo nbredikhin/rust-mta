@@ -13,6 +13,24 @@ function getImgForItem(item)
 	return itemsImgData[item.key] and itemsImgData[item.key].img or unknownImg
 end
 
+function drawItem(item, x, y, w, h)
+	if not item then
+		return
+	end
+
+	-- img
+	dxDrawImage(x, y, w, h, getImgForItem(item))
+
+	-- amount
+	local spacing = settings.slotAmountSpacing
+	local amount = item.amount > 1 and "x" .. item.amount or ""
+	local x1, y1 = x + spacing, y + spacing
+	local x2, y2 = x + w - spacing, y + h - spacing + 2
+
+	dxDrawText(amount, x1+1, y1+1, x2+1, y2+1, 0x44000000, 1, "default-bold", "right", "bottom")
+	dxDrawText(amount, x1, y1, x2, y2, 0xFFFFFFFF, 1, "default-bold", "right", "bottom")
+end
+
 function drawSlot(slot)
 	-- border
 	dxDrawRectangle(slot.x - 1, slot.y - 1, slot.w + 2, slot.h + 2, 0x11000000)
@@ -38,17 +56,13 @@ function drawSlot(slot)
 
 	-- item
 	if slot.item then
-		-- img
-		dxDrawImage(slot.x, slot.y, slot.w, slot.h, getImgForItem(slot.item))
+		if movingItem then
+			if movingItem.id == slot.item.id then
+				return
+			end
+		end
 
-		-- amount
-		local spacing = settings.slotAmountSpacing
-		local amount = slot.item.amount > 1 and "x" .. slot.item.amount or ""
-		local x1, y1 = slot.x + spacing, slot.y + spacing
-		local x2, y2 = slot.x + slot.w - spacing, slot.y + slot.h - spacing + 2
-
-		dxDrawText(amount, x1+1, y1+1, x2+1, y2+1, 0x44000000, 1, "default-bold", "right", "bottom")
-		dxDrawText(amount, x1, y1, x2, y2, 0xFFFFFFFF, 1, "default-bold", "right", "bottom")
+		drawItem(slot.item, slot.x, slot.y, slot.w, slot.h)
 	end
 end
 
