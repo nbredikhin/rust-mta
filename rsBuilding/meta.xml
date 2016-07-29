@@ -25,8 +25,8 @@
 	<script type="server" src="server/test.lua"/>
 	<script type="server" src="server/main.lua"/>
 
-	<script type="client" src="client/placement_rules.lua"/>
-	<script type="client" src="client/placement.lua"/>
+	<script type="client" src="client/PartPreview.lua"/>
+	<script type="client" src="client/main.lua"/>
 
 	<!-- Files -->
 	<file src="assets/shaders/highlight.fx"/>

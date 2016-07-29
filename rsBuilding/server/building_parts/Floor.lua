@@ -18,7 +18,6 @@ function Floor:checkPlacement(building, x, y, z, direction)
 		if isPartOfType(part, Wall) then
 			wallsCount = wallsCount + 1
 		end
-		outputChatBox("part")
 	end
 	-- Walls under neighboring floors
 	for i = 0, 3 do
