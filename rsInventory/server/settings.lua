@@ -1,0 +1,3 @@
+settings = {
+	inventorySize = 30
+}

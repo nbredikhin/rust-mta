@@ -1,11 +1,14 @@
 inventory = {
 	alpha = settings.alpha,
-	visible = false,
-	key = "e"
+	visible = false
 }
 
 
 function getImgForItem(item)
+	if not item then
+		return unknownImg
+	end
+
 	local itemsImgData = root:getData("itemsImgData") or {}
 	return itemsImgData[item.key] and itemsImgData[item.key].img or unknownImg
 end
@@ -18,11 +21,14 @@ function drawSlot(slot)
 	local color = slot.color
 	if not color then
 		color = tocolor(settings.colorNormal[1], settings.colorNormal[2], settings.colorNormal[3], inventory.alpha)
+
+		-- hovered
 		if slot == slotUnderCursor then
 			color = tocolor(settings.colorHover[1], settings.colorHover[2], settings.colorHover[3], inventory.alpha)
 		end
 
-		if slot.item and slot.item.id == (selectedItem and selectedItem.id or nil) then
+		-- selected
+		if selectedItem and (slot.item == selectedItem) then
 			color = tocolor(settings.colorSelected[1], settings.colorSelected[2], settings.colorSelected[3], inventory.alpha)
 		end
 	end
@@ -32,7 +38,17 @@ function drawSlot(slot)
 
 	-- item
 	if slot.item then
+		-- img
 		dxDrawImage(slot.x, slot.y, slot.w, slot.h, getImgForItem(slot.item))
+
+		-- amount
+		local spacing = settings.slotAmountSpacing
+		local amount = slot.item.amount > 1 and "x" .. slot.item.amount or ""
+		local x1, y1 = slot.x + spacing, slot.y + spacing
+		local x2, y2 = slot.x + slot.w - spacing, slot.y + slot.h - spacing + 2
+
+		dxDrawText(amount, x1+1, y1+1, x2+1, y2+1, 0x44000000, 1, "default-bold", "right", "bottom")
+		dxDrawText(amount, x1, y1, x2, y2, 0xFFFFFFFF, 1, "default-bold", "right", "bottom")
 	end
 end
 
@@ -103,13 +119,59 @@ function drawInventoryBlock()
 end
 --
 
--- drawing all the shit
+function getSlotUnderCursor()
+	local x, y = getCursorPosition()
+
+	-- get slot under point
+	for _, slot in ipairs(inventory) do
+		if x > slot.x and x < slot.x + slot.w then
+			if y > slot.y and y < slot.y + slot.h then
+				return slot
+			end
+		end
+	end
+
+	-- exclude spacing between inventory slots
+	if (x > inventory.x1 and x < inventory.x2) and (y > inventory.y1 and y < inventory.y2) then
+		return getClosiestSlotToCursor(x, y)
+	end
+
+	-- exclude spacing between hotbar slots
+	if (x > hotbar.x1 and y < hotbar.x2) and (y > hotbar.y1 and y < hotbar.y2) then
+		return getClosiestSlotToCursor(x, y)
+	end
+end
+
+function getClosiestSlotToCursor(cursorX, cursorY)
+	local x1, y1 = cursorX, cursorY
+
+	local minDistance = 32767
+	local closiestSlot
+
+	for _, slot in ipairs(inventory) do
+		local x2, y2 = slot.x + slot.w/2, slot.y + slot.h/2
+
+		local distance = math.sqrt((x2 - x1)^2 + (y2 - y1)^2)
+
+		if distance < minDistance then 
+			minDistance = distance
+			closiestSlot = slot
+		end
+	end
+
+	return closiestSlot
+end
+
+
 addEventHandler("onClientPreRender", root,
 	function()
 		if not settings.visible or not inventory.visible then
 			return
 		end
+		-- slot under cursor
+		slotUnderCursor = getSlotUnderCursor()
 
+		-- drawing all the shit
 		drawBG()
 		drawInventoryBlock()
 	end
@@ -122,16 +184,8 @@ addEventHandler("onClientKey", root,
 			return
 		end
 
-		if key == inventory.key then
+		if key == settings.key then
 			toggleInventory()
 		end
 	end
 )
-
-function getEmptySlot()
-	for _, slot in ipairs(inventory) do
-		if not slot.item then
-			return slot
-		end
-	end
-end

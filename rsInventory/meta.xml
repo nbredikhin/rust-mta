@@ -17,8 +17,9 @@
 
     <!-- server scripts -->
     <script src="server/utils.lua" type="server" />
+    <script src="server/settings.lua" type="server" />
+    <script src="server/playerData.lua" type="server" />
     <script src="server/server.lua" type="server" />
-    <script src="server/players.lua" type="server" />
 
     <!-- client exports, descriptions of functions are inside the client.lua file -->
     <script src="exports/client.lua" type="client"/>

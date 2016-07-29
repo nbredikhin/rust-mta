@@ -14,7 +14,9 @@ settings = {
     inventoryBGColor = tocolor(100, 100, 100, 240),
     selectedItemIMGSize = 128 * scaleFactor,
     visible = true,
-    titleSpacing = 32 * scaleFactor
+    titleSpacing = 32 * scaleFactor,
+    key = "e",
+    slotAmountSpacing = 4
 }
 settings.hotbarY = screenH - settings.heigth - settings.blockSpacing
 settings.inventoryY = settings.hotbarY - settings.blockSpacing - (settings.heigth + settings.spacing) * (settings.inventoryRows + 1)

@@ -25,14 +25,19 @@ gui.descriptionColor = tocolor(200, 200, 200)
 
 addEventHandler("onClientRender", root,
 	function()
+		if true then
+			return
+		end
+		
 		if not inventory.visible then
-			selectedItem = nil
+			selectedItemID = nil
 			return
 		end
 
-		local item = selectedItem
+		local itemID = selectedItemID
+		local item = localPlayer:getData("items")[itemID]
 
-		if not item then
+		if not itemID or not item then
 			return
 		end
 
@@ -40,7 +45,7 @@ addEventHandler("onClientRender", root,
 		dxDrawRectangle(gui.x, gui.y, gui.w, gui.h, gui.color())
 
 		-- item img
-		dxDrawImage(gui.imgX, gui.imgY, gui.imgSize, gui.imgSize, getImgForItem(item))
+		dxDrawImage(gui.imgX, gui.imgY, gui.imgSize, gui.imgSize, getImgForItemByID(itemID))
 
 		-- name
 		dxDrawText(tostring(item.name), gui.textX, gui.textY, gui.textX, gui.textY, 0xFFFFFFFF, 2 * scaleFactor, "default-bold")

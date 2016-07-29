@@ -23,20 +23,18 @@ addEventHandler("onClientPreRender", root,
 		end
 
 		for index, slot in ipairs(hotbar) do
-			if slot.isHotbar then
-				local colorSelected = settings.colorSelected
+			local colorSelected = settings.colorSelected
 
-				if hotbar.selected == index and not inventory.visible then
-					slot.color = tocolor(colorSelected[1], colorSelected[2], colorSelected[3], inventory.alpha)
-				else
-					slot.color = nil
-				end
-
-				slot.alpha = inventory.alpha
-
-				-- рисуем
-				slot:draw()
+			if hotbar.selected == index and not inventory.visible then
+				slot.color = tocolor(colorSelected[1], colorSelected[2], colorSelected[3], inventory.alpha)
+			else
+				slot.color = nil
 			end
+
+			slot.alpha = inventory.alpha
+
+			-- рисуем
+			slot:draw()
 		end
 	end
 )
@@ -104,10 +102,6 @@ addEventHandler("onClientChangeHotbarSlot", root,
 			return
 		end
 
-		if not slot.item then
-			return
-		end
-
-		outputChatBox(tostring(slot.item.name))
+		outputChatBox(tostring(slot.index))
 	end
 )

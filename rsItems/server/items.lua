@@ -4,7 +4,7 @@ items["resource_wood"] = {
 	imgName = "wood.png",
 	name = "Древесина",
 	description = "Из древесины можно создать различные орудия труда или построить дом",
-	stack = 1
+	stack = 1000
 }
 
 items["weapon_stone"] = {

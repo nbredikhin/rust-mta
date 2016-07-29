@@ -2,11 +2,7 @@
 
 
 
--- getting itemCounter
-
-
-
--- refreshing itemsData on every rsItems resource start
+-- getting itemCounter and itemsData
 addEventHandler("onResourceStart", root,
 	function(resourceStarted)
 		local itemsResource = getResourceFromName("rsItems")
@@ -18,7 +14,6 @@ addEventHandler("onResourceStart", root,
 
 			Data.itemCounter = Data.itemCounter or 1
 
-			--outputChatBox("itemCounter = " .. tostring(Data.itemCounter))
 		elseif resourceStarted == itemsResource then
 			itemsData = exports["rsItems"]:getItems()
 		end
@@ -26,7 +21,7 @@ addEventHandler("onResourceStart", root,
 )
 
 
-function createItem(itemKey)
+function createItem(itemKey, amount)
 	if not itemsData then
 		outputDebugString("rsItems resource is not running", 2)
 		return
@@ -37,110 +32,126 @@ function createItem(itemKey)
 		return
 	end
 
+	local amount = amount or 1
+
 	local item = deepcopy(itemsData[itemKey])
 
 	item.id = Data.itemCounter
+	item.amount = amount
 
 	Data.itemCounter = Data.itemCounter + 1
 
 	return item
 end
 
-function giveItemToPlayer(item, player)
-	if not item or not player then
-		return false
-	end
-
-	local playerItems = player:getData("items") or {}
-
-	playerItems[item.id] = item
-
-	player:setData("items", playerItems)
-
-	return true
+function dropPlayerItem(player, item)
+	-- watch out right usage in giveItemToPlayer function (dropping item which isn't actually inside inventary)
+	outputChatBox("drop item")
 end
 
-function createItemByKeyForPlayer(key, player)
-	if not key or not player then
+function giveItemToPlayer(item, player)
+	if not item or not player then
+		outputDebugString("", 2)
 		return
 	end
 
-	local item = createItem(key)
+	if not playerItems[player] then
+		outputDebugString("", 2)
+		return
+	end
 
+	local items = fixItemStacking(item)
+
+	for _, item in ipairs(items) do
+		local slot = getEmptySlot(player)
+		if slot then
+			item.slot = slot
+			table.insert(playerItems[player], item)
+			refreshClientData(player)
+		else
+			dropPlayerItem(player, item)
+		end
+	end
+end
+
+function createItemByKeyForPlayer(key, player, amount)
+	local item = createItem(key, amount)
+	if item then
+		giveItemToPlayer(item, player)
+	end
+end
+
+
+function refreshClientData(client)
+	if not client then
+		return
+	end
+
+	if not playerItems[client] then
+		return
+	end
+
+	triggerClientEvent(client, "inventory.refresh", resourceRoot, playerItems[client])
+end
+
+function fixItemStacking(item) -- e.g. one wood item with 2400 amount will return 3 items with 1000, 1000, 400 amount
 	if not item then
-		outputDebugString("no item", 2)
 		return
 	end
-	
-	giveItemToPlayer(item, player)
+
+	if not item.stack or not item.amount then
+		return
+	end
+
+	if item.amount <= item.stack then
+		return {item}
+	end
+
+	-- amount: 2400
+	-- 2 new items with 1000
+	local newItems = {}
+	for i = 1, math.floor(item.amount / item.stack) do
+		local newItem = createItem(item.key, item.stack)
+		if not newItem then
+			return item
+		end
+
+		table.insert(newItems, newItem)
+	end
+
+	-- 1 new item with 400
+	local remainder = item.amount % item.stack
+	if remainder > 0 then
+		local newItem = createItem(item.key, remainder)
+
+		table.insert(newItems, newItem)
+	end
+
+	return newItems
+end
+
+function getEmptySlot(player)
+	local items = playerItems[player]
+	if not items then
+		return
+	end
+
+	local occupied = {}
+	for _, item in ipairs(items) do
+		if item.slot then
+			occupied[item.slot] = true
+		end
+	end
+
+	for i = 1, settings.inventorySize do
+		if not occupied[i] then
+			return i
+		end
+	end
 end
 
 addCommandHandler("items", 
-	function(player)
-		createItemByKeyForPlayer("resource_wood", player)
-		--createItemByKeyForPlayer("weapon_stone", player)
-		--createItemByKeyForPlayer("resource_wood", player)
+	function(player, _, itemKey, amount)
+		createItemByKeyForPlayer(itemKey, player, tonumber(amount))
 	end
 )
-
-addEventHandler("onElementDataChange", root,
-	function(dataName, oldValue)
-
-		if client and dataName == "items" then
-			reportAndRevertDataChange(dataName, oldValue, source, client)
-		end
-	end
-)
-
-function reportAndRevertDataChange(dataName, oldValue, source, client)
-	local newValue = getElementData(source,dataName)
-
-	local oldItemsString = ""
-	local newItemsString = ""
-	if dataName == "items" then 
-		if type(oldValue) == "table" then
-			oldItemsString = oldItemsString .. "{"
-
-			for key, value in pairs(oldValue) do
-				oldItemsString = oldItemsString .. "[" .. tostring(key) .. "] = " .. tostring(value and value.name or "nil") .. ", "
-			end
-
-			oldItemsString = oldItemsString .. "}"
-		end
-
-		if type(newValue) == "table" then
-			newItemsString = newItemsString .. "{"
-
-			for key, value in pairs(newValue) do
-				newItemsString = newItemsString .. "[" .. tostring(key) .. "] = " .. tostring(value and value.name or "nil") .. ", "
-			end
-
-			newItemsString = newItemsString .. "}"
-		end
-	end
-
-	local reportString = "Possible data spoofing!"
-		.. " source: " .. tostring(source)
-		.. ", sourceName: " .. tostring(source and source.name or "nil")
-		.. ", sourceAccountName: " .. tostring(source and source.account and source.account.name or "nil")
-		.. ", client: " .. tostring(client)
-		.. ", clientName: " .. tostring(client and client.name or "nil")
-		.. ", clientAccountName: " .. tostring(client and client.account and client.account.name or "nil")
-		.. ", dataName: " .. tostring(dataName)
-		.. ", oldValue: " .. tostring(oldValue)
-		.. ", newValue: " .. tostring(getElementData(source,dataName))
-		.. ", oldItems: " .. oldItemsString
-		.. ", newItems: " .. newItemsString
-	
-    for _, player in ipairs(getElementsByType("player")) do
-    	if doesAccountHaveAdminRights(player.account) then
-    		outputChatBox("[Anticheat] Possible data spoofing! (watch console/serverlogs)", player, 222, 0, 0)
-    		outputConsole(reportString, player)
-    	end
-    end
-
-    outputServerLog(reportString)
-
-    -- Revert (Note this will cause an onElementDataChange event, but 'client' will be nil)
-    setElementData(source, dataName, oldValue)               
-end

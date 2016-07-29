@@ -4,6 +4,8 @@ end
 
 local itemsImgData = {}
 for key, item in pairs(items) do
+	item.stack = item.stack or 1
+
 	if item.imgName then
 		itemsImgData[key] = {}
 		itemsImgData[key].imgName = item.imgName
