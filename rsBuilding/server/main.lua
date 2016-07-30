@@ -1,7 +1,6 @@
 local buildings = {}
 
 local partTypes = {
-	["wall"] = Wall,
 	["wall_door"] = WallDoor,
 	["wall_window"] = WallWindow,
 }
@@ -20,10 +19,22 @@ addEventHandler("rsBuilding.build", resourceRoot, function (targetObject, partTy
 		end
 		local partClass = partTypes[partType]
 		if not partClass then
-			outputChatBox("No such part: %s" % tostring(partType))
-			return
+			local capitalized = string.gsub(partType, "^%l", string.upper)
+			partClass = _G[capitalized]
+			if not partClass then
+				outputChatBox("No such part: %s" % tostring(partType))
+				return
+			end
 		end
 		local part = partClass:new()
+		if partClass == Foundation then
+			local dx, dy = getDirectionOffset(direction)
+			position.x = position.x + dx
+			position.y = position.y + dy
+			direction = 0
+		elseif partClass == Floor then
+			position.z = position.z + 1
+		end
 		building1:addPart(part, position.x, position.y, position.z, direction)
 	end
 end)

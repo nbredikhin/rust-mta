@@ -3,7 +3,7 @@ PartPreview = {}
 PartPreview.partName = nil
 
 -- Максимальное расстояние от камеры, на котором можно строить
-local PLACEMENT_RANGE = 15
+local PLACEMENT_RANGE = 30 -- 15
 
 local screenWidth, screenHeight = guiGetScreenSize()
 local placementScreenPosition = {x = screenWidth / 2, y = screenHeight / 2}

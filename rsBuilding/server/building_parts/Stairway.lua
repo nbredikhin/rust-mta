@@ -23,7 +23,7 @@ function Stairway:spawn(building, x, y, z, direction)
 	position = position + Vector3(0, 0, BUILDING_NODE_HEIGHT / 2)
 	local rotation = Vector3(0, 0, 90 * self.direction)
 	self.element = createObject(
-		exports.rsModels:getModelFromName("stairs"), 
+		exports.rsModels:getModelFromName("stairway"), 
 		self.building:getWorldPosition(position),
 		self.building:getWorldRotation(rotation)
 	)
