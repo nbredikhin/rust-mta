@@ -11,6 +11,10 @@ function dropItem(item)
 		return
 	end
 
+	if item == selectedItem then
+		selectedItem = nil
+	end
+
 	triggerServerEvent("inventory.onClientDropItem", resourceRoot, item.id)
 end
 

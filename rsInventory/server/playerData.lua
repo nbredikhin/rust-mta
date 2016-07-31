@@ -5,7 +5,7 @@ for _, player in ipairs(getElementsByType("player")) do
 end
 
 
-function savePlayerDataIntoAccount(player, account)
+function savePlayerDataIntoAccount(player, account, eventName)
 	if not player or not account then
 		return
 	end
@@ -25,7 +25,9 @@ function savePlayerDataIntoAccount(player, account)
 
 	playerItems[player] = nil
 
-	refreshClientData(player)
+	if eventName ~= "onResourceStop" then
+		refreshClientData(player)
+	end
 end
 
 function loadPlayerData(player, account)
@@ -75,7 +77,7 @@ addEventHandler("onResourceStart", resource.rootElement,
 				for _, player in ipairs(getElementsByType("player")) do
 					loadPlayerData(player, player.account)
 				end
-			end, 500, 1
+			end, 100, 1
 		)
 	end
 )
@@ -83,7 +85,7 @@ addEventHandler("onResourceStart", resource.rootElement,
 addEventHandler("onResourceStop", resource.rootElement,
 	function()
 		for _, player in ipairs(getElementsByType("player")) do
-			savePlayerDataIntoAccount(player, player.account)
+			savePlayerDataIntoAccount(player, player.account, eventName)
 		end
 	end
 )

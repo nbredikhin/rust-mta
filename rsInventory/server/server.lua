@@ -126,11 +126,7 @@ function refreshClientData(client)
 		return
 	end
 
-	if not playerItems[client] then
-		return
-	end
-
-	triggerClientEvent(client, "inventory.refresh", resourceRoot, playerItems[client])
+	triggerClientEvent(client, "inventory.refresh", resourceRoot, playerItems[client] or {})
 end
 
 function fixItemStacking(item) -- e.g. one wood item with 2400 amount will return 3 items with 1000, 1000, 400 amount
