@@ -4,7 +4,7 @@ replacedModelsIds = {
 	["wall_door"] = 1623,
 	["wall_window"] = 1624,
 	["floor"] = 3397,
-	["stairs"] = 1660,
+	["stairway"] = 1660,
 	["door"] = 3391,
 	["hatchet"] = 339,
 }

@@ -33,6 +33,12 @@ function getDirectionFromName(name)
 	return directions[name]
 end
 
+-- В градусах
+function getDirectionFromRotation(rotation)
+	local direction = math.floor(rotation / 90)
+	return direction % 4
+end
+
 function getDirectionOffset(direction)
 	check("getDirectionOffset", {direction, "number"})
 	if direction == 0 then

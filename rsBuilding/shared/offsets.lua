@@ -20,3 +20,9 @@ partSize.wall = {
 	y = partSize.floor.y,
 	z = 8
 }
+
+partSize.stairway = {
+	x = partSize.floor.x,
+	y = partSize.floor.y,
+	z = partSize.wall.z
+}

@@ -19,8 +19,8 @@
 	<file src="models/wall_window.col"/>
 	<file src="models/wall.dff"/>
 	<file src="models/wall.col"/>
-	<file src="models/stairs.dff"/>
-	<file src="models/stairs.col"/>
+	<file src="models/stairway.dff"/>
+	<file src="models/stairway.col"/>
 	<file src="models/door.dff"/>
 	<file src="models/door.col"/>
 	<file src="models/hatchet.dff"/>
