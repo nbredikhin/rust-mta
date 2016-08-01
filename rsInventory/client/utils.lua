@@ -19,3 +19,18 @@ function math.round(num, idp)
 end
 
 unknownImg = dxCreateTexture("files/unknown.png", "argb", true, "clamp")
+
+addEvent("inventory.setPedAnimation", true)
+addEventHandler("inventory.setPedAnimation", resourceRoot,
+	function(arg)
+		setPedAnimation(unpack(arg))
+	end
+)
+
+addCommandHandler("cursor",
+	function()
+		outputDebugString("rsInventiry/utils.lua changed cursor state")
+
+		showCursor(not isCursorShowing())
+	end
+)

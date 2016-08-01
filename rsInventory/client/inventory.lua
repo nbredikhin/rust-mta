@@ -9,17 +9,33 @@ function getImgForItem(item)
 		return unknownImg
 	end
 
+
 	local itemsImgData = root:getData("itemsImgData") or {}
+
 	return itemsImgData[item.key] and itemsImgData[item.key].img or unknownImg
 end
 
-function drawItem(item, x, y, w, h)
+
+addCommandHandler("img",
+	function()
+		local itemsImgData = root:getData("itemsImgData")
+		
+		for key in pairs(itemsImgData) do
+			outputChatBox(key)
+		end
+	end
+)
+
+function drawItem(item, x, y, w, h, alpha)
 	if not item then
 		return
 	end
 
+	local alpha = alpha or 255
+	local color = tocolor(255, 255, 255, alpha)
+
 	-- img
-	dxDrawImage(x, y, w, h, getImgForItem(item))
+	dxDrawImage(x, y, w, h, getImgForItem(item), 0, 0, 0, color)
 
 	-- amount
 	local spacing = settings.slotAmountSpacing
@@ -27,8 +43,8 @@ function drawItem(item, x, y, w, h)
 	local x1, y1 = x + spacing, y + spacing
 	local x2, y2 = x + w - spacing, y + h - spacing + 2
 
-	dxDrawText(amount, x1+1, y1+1, x2+1, y2+1, 0x44000000, 1, "default-bold", "right", "bottom")
-	dxDrawText(amount, x1, y1, x2, y2, 0xFFFFFFFF, 1, "default-bold", "right", "bottom")
+	dxDrawText(amount, x1+1, y1+1, x2+1, y2+1, tocolor(0, 0, 0, alpha/3), 1, settings.smallFont, "right", "bottom")
+	dxDrawText(amount, x1, y1, x2, y2, color, 1, settings.smallFont, "right", "bottom")
 end
 
 function drawSlot(slot)
@@ -40,14 +56,16 @@ function drawSlot(slot)
 	if not color then
 		color = tocolor(settings.colorNormal[1], settings.colorNormal[2], settings.colorNormal[3], inventory.alpha)
 
-		-- hovered
-		if slot == slotUnderCursor then
-			color = tocolor(settings.colorHover[1], settings.colorHover[2], settings.colorHover[3], inventory.alpha)
-		end
+		if inventory.visible then
+			-- hovered
+			if slot == slotUnderCursor then
+				color = tocolor(settings.colorHover[1], settings.colorHover[2], settings.colorHover[3], inventory.alpha)
+			end
 
-		-- selected
-		if selectedItem and (slot.item == selectedItem) then
-			color = tocolor(settings.colorSelected[1], settings.colorSelected[2], settings.colorSelected[3], inventory.alpha)
+			-- selected
+			if selectedItem and (slot.item == selectedItem) then
+				color = tocolor(settings.colorSelected[1], settings.colorSelected[2], settings.colorSelected[3], inventory.alpha)
+			end
 		end
 	end
 	
@@ -56,13 +74,15 @@ function drawSlot(slot)
 
 	-- item
 	if slot.item then
-		if movingItem then
-			if movingItem.id == slot.item.id then
-				return
-			end
-		end
-
 		drawItem(slot.item, slot.x, slot.y, slot.w, slot.h)
+	end
+end
+
+function isThereAnEmptySlot()
+	for _, slot in ipairs(inventory) do
+		if not slot.item then
+			return true
+		end
 	end
 end
 
@@ -88,11 +108,15 @@ end
 
 function toggleInventory(state)
 	inventory.visible = state or (not inventory.visible)
-	showCursor(inventory.visible)
+	showCursor(inventory.visible, false)
 
 	if inventory.visible then
+		toggleControl("fire", false)
+		toggleControl("aim_weapon", false)
 		inventory.alpha = 100
 	else
+		toggleControl("fire", true)
+		toggleControl("aim_weapon", true)
 		inventory.alpha = settings.alpha
 	end
 
@@ -123,7 +147,7 @@ end
 function drawInventoryBlock()
 	local textX, textY = inventory.x1, inventory.y1 - settings.titleSpacing
 
-	dxDrawText(text.inventory, textX, textY, textX, textY, 0xFFFFFFFF, 2 * scaleFactor, "default-bold")
+	dxDrawText(text.inventory, textX, textY, textX, textY, 0xFFFFFFFF, 1, settings.titleFont)
 
 	for _, slot in ipairs(inventory) do
 		if not slot.isHotbar then
@@ -134,6 +158,10 @@ end
 --
 
 function getSlotUnderCursor()
+	if not isCursorShowing() then
+		return
+	end
+
 	local x, y = getCursorPosition()
 
 	-- get slot under point
@@ -195,6 +223,10 @@ addEventHandler("onClientPreRender", root,
 addEventHandler("onClientKey", root,
 	function(key, state)
 		if not state then
+			return
+		end
+
+		if isChatBoxInputActive() then
 			return
 		end
 

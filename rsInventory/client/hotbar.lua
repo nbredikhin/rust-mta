@@ -25,7 +25,7 @@ addEventHandler("onClientPreRender", root,
 		for index, slot in ipairs(hotbar) do
 			local colorSelected = settings.colorSelected
 
-			if hotbar.selected == index and not inventory.visible then
+			if hotbar.selected == index then
 				slot.color = tocolor(colorSelected[1], colorSelected[2], colorSelected[3], inventory.alpha)
 			else
 				slot.color = nil
@@ -47,7 +47,7 @@ addEventHandler("onClientKey", root,
 		end
 
 		if inventory.visible then
-			return
+			--return
 		end
 
 		if isConsoleActive() then

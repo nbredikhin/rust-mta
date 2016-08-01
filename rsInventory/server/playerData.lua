@@ -21,6 +21,14 @@ function savePlayerDataIntoAccount(player, account, eventName)
 		return
 	end
 
+	for key, value in pairs(items) do
+		if type(value) == "userdata" or type(value) == "function" then
+			outputDebugString(type(value) .. " type in items table!", 2)
+			items[key] = nil
+		end
+	end
+
+
 	account:setData("inventory.items", toJSON(items))
 
 	playerItems[player] = nil
@@ -77,7 +85,7 @@ addEventHandler("onResourceStart", resource.rootElement,
 				for _, player in ipairs(getElementsByType("player")) do
 					loadPlayerData(player, player.account)
 				end
-			end, 100, 1
+			end, 500, 1
 		)
 	end
 )

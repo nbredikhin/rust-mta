@@ -43,25 +43,38 @@ function createItem(itemKey, amount)
 	return item
 end
 
-function dropPlayerItem(player, item)
-	if not player or not item or not playerItems[player] then
+function dropPlayerItem(player, item, pos)
+	if not player or not item then
 		return
 	end
 
-	for index, playerItem in ipairs(playerItems[player]) do
-		if playerItem == item then
-			table.remove(playerItems[player], index)
-			break
+	-- удаляем итем из итемов игрока
+	if playerItems[player] then
+		for index, playerItem in ipairs(playerItems[player]) do
+			if playerItem == item then
+				table.remove(playerItems[player], index)
+				break
+			end
 		end
 	end
 
-	refreshClientData(client)
+	refreshClientData(player)
 
-	item.droppedTickCount = getTickCount()
+	if pos then
+		item.droppedTickCount = getTickCount()
+		item.object = createObject(item.model or shared.defaultModel, pos.x, pos.y, pos.z + 0.2)
+		item.object.scale = item.modelScale or 0.3
+		item.object:setData("inventory.itemData", item)
+		item.object.frozen = true
 
-	table.insert(itemsOnTheGround, item)
+		table.insert(itemsOnTheGround, item)
+
+		triggerClientEvent("inventory.onItemDropped", resourceRoot, item)
+	end
 
 	-- TODO: placing item near the player
+
+	setPedAnimationForAllExceptPlayer(player, animations.drop.block, animations.drop.anim, -1, false, false, true, false)
 end
 
 function giveItemToPlayer(item, player)
@@ -108,15 +121,27 @@ function giveItemToPlayer(item, player)
 			table.insert(playerItems[player], item)
 			refreshClientData(player)
 		else
-			dropPlayerItem(player, item)
+			return
 		end
 	end
+
+	return true
 end
 
 function createItemByKeyForPlayer(key, player, amount)
+	if not player then
+		return
+	end
+
+	if not amount then
+		return
+	end
+
 	local item = createItem(key, amount)
 	if item then
-		giveItemToPlayer(item, player)
+		if not giveItemToPlayer(item, player) then
+			outputDebugString("createItemByKeyForPlayer no slots for player " .. tostring(player.name), 2)
+		end
 	end
 end
 
@@ -129,7 +154,7 @@ function refreshClientData(client)
 	triggerClientEvent(client, "inventory.refresh", resourceRoot, playerItems[client] or {})
 end
 
-function fixItemStacking(item) -- e.g. one wood item with 2400 amount will return 3 items with 1000, 1000, 400 amount
+function fixItemStacking(item) -- e.g. one wood item with 2400 amount will return 3 items with 1000, 1000, 400 amount (returns {item} even if no changes)
 	if not item then
 		return
 	end
@@ -217,6 +242,46 @@ function getSlotItem(player, slot)
 	end
 end
 
+addEventHandler("inventory.onClientAttemptToPickUpItem", resourceRoot,
+	function(item)
+		if not client then
+			return
+		end
+
+		for index, itemOnTheGround in ipairs(itemsOnTheGround) do
+			if item.id == itemOnTheGround.id then
+				if itemOnTheGround.object then
+					local distance = getDistanceBetweenPoints3D(client.position, itemOnTheGround.object.position)
+					if distance > shared.maxDistanceToPickupItem then
+						return
+					end
+				else
+					return
+				end
+
+				if giveItemToPlayer(itemOnTheGround, client) then
+					itemOnTheGround.object:destroy()
+					itemOnTheGround.object = nil
+
+					table.remove(itemsOnTheGround, index)
+				end
+			end
+		end
+	end
+)
+
+addCommandHandler("s",
+	function(player)
+		outputChatBox(#playerItems[player])
+
+		for _, item in ipairs(playerItems[player]) do
+			if not item.slot then
+				outputChatBox(item.id .. " no slot")
+			end
+		end
+	end
+)
+
 addEventHandler("inventory.onClientMoveItem", resourceRoot,
 	function(itemID, slot)
 		if not client then
@@ -267,7 +332,6 @@ addEventHandler("inventory.onClientMoveItem", resourceRoot,
 					end
 				-- если места в стаке нет, то свапаем
 				else
-					outputChatBox("swap")
 					itemToSwapWith.slot = item.slot
 					item.slot = slot
 				end
@@ -283,7 +347,7 @@ addEventHandler("inventory.onClientMoveItem", resourceRoot,
 )
 
 addEventHandler("inventory.onClientDropItem", resourceRoot,
-	function(itemID)
+	function(itemID, groundPos)
 		if not client then
 			return
 		end
@@ -298,6 +362,6 @@ addEventHandler("inventory.onClientDropItem", resourceRoot,
 			return
 		end
 
-		dropPlayerItem(client, item)
+		dropPlayerItem(client, item, groundPos)
 	end
 )

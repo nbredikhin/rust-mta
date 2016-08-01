@@ -13,10 +13,11 @@ local gui = {
 gui.imgX = gui.x + gui.w - gui.spacing - gui.imgSize
 gui.imgY = gui.y + gui.spacing
 
-gui.textX = gui.x
-gui.textY = gui.y - settings.titleSpacing
+gui.titleX = gui.x
+gui.titleY = gui.y - settings.titleSpacing
+gui.titleFont = settings.titleFont
 
-gui.descriptionFont = dxCreateFont("files/tahoma.ttf", math.round(scaleFactor*10), false, "proof")
+gui.descriptionFont = settings.smallFont
 gui.description_x1 = gui.x + gui.spacing
 gui.description_y1 = gui.y + gui.spacing
 gui.description_x2 = gui.imgX - gui.spacing
@@ -26,7 +27,6 @@ gui.descriptionColor = tocolor(200, 200, 200)
 addEventHandler("onClientRender", root,
 	function()
 		if not inventory.visible then
-			selectedItem = nil
 			return
 		end
 
@@ -42,8 +42,8 @@ addEventHandler("onClientRender", root,
 		-- item img
 		dxDrawImage(gui.imgX, gui.imgY, gui.imgSize, gui.imgSize, getImgForItem(item))
 
-		-- name
-		dxDrawText(tostring(item.name), gui.textX, gui.textY, gui.textX, gui.textY, 0xFFFFFFFF, 2 * scaleFactor, "default-bold")
+		-- title
+		dxDrawText(tostring(item.name), gui.titleX, gui.titleY, gui.titleX, gui.titleY, 0xFFFFFFFF, 1, gui.titleFont)
 
 		-- description
 		dxDrawText(item.description or "", gui.description_x1, gui.description_y1, gui.description_x2, gui.description_y2, gui.descriptionColor, 1, gui.descriptionFont, "left", "top", true, true)

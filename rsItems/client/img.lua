@@ -5,7 +5,7 @@ function createTextures()
 		imgData.img = dxCreateTexture("img\\" .. imgData.imgName, "argb", true, "clamp")
 	end
 
-	root:setData("itemsImgData", itemsImgData)
+	root:setData("itemsImgData", itemsImgData, false)
 end
 
 
@@ -14,7 +14,7 @@ addEventHandler("onClientResourceStart", root,
 		if resourceStarted == resource then
 			local itemsImgData = root:getData("itemsImgData")
 
-			if itemsImgData then
+			if itemsImgData and type(itemsImgData) == "table" then
 				createTextures()
 			else
 				setTimer(createTextures, 500, 1)
@@ -24,11 +24,10 @@ addEventHandler("onClientResourceStart", root,
 )
 
 
-
 addEventHandler("onClientResourceStop", root,
 	function(resourceStopped)
 		if resourceStopped == resource then
-			root:setData("itemsImgData", false)
+			root:setData("itemsImgData", false, false)
 		end
 	end
 )

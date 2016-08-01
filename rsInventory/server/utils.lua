@@ -1,5 +1,6 @@
 addEvent("inventory.onClientMoveItem", true)
 addEvent("inventory.onClientDropItem", true)
+addEvent("inventory.onClientAttemptToPickUpItem", true)
 
 local dataPath = "server\\data.json"
 
@@ -67,4 +68,17 @@ function doesAccountHaveAdminRights(account)
     end
 
     return false
+end
+
+animations = {
+    drop = {block = "SWORD", anim = "sword_part"}
+}
+
+function setPedAnimationForAllExceptPlayer(...)
+    local player = arg[1]
+    for _, playerOnline in ipairs(getElementsByType("player")) do
+      --  if player ~= playerOnline then
+            triggerClientEvent(playerOnline, "inventory.setPedAnimation", resourceRoot, arg)
+      --  end
+    end
 end

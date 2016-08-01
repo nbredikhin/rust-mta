@@ -1,11 +1,13 @@
 <meta>
 	<oop>true</oop>
-	 <!-- this is for possible translations -->
+	 <!-- shared scripts -->
 	<script src="shared/text.lua" type="shared" />
+    <script src="shared/shared.lua" type="shared" />
 
 	<!-- files -->
 	<file src="files/unknown.png" type="client"/>
     <file src="files/tahoma.ttf" type="client"/>
+    <file src="files/tahomabd.ttf" type="client"/>
 
 	<!-- client scripts -->
 	<script src="client/utils.lua" type="client" />
