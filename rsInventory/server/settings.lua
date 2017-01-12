@@ -1,3 +1,0 @@
-settings = {
-	inventorySize = 30
-}
