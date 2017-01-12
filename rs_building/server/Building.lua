@@ -1,4 +1,5 @@
 Building = class("Building")
+local buildings = {}
 
 -- Создание новой постройки
 function Building:initialize(worldPosition, worldAngle)
@@ -9,6 +10,13 @@ function Building:initialize(worldPosition, worldAngle)
     -- Создание трёхмерной сетки для хранения деталей
     self.grid = self:createGrid(3)
     self.parts = {}
+    -- Элемент для синхронизации
+    self.element = createObject(1337, worldPosition)
+    self.element.alpha = 0
+    self.element:setCollisionsEnabled(false)
+    self.element:setData("isBuilding", true)
+    -- Добавление в таблицу построек
+    buildings[self.element] = self    
     -- Добавление первой детали
     self:addPart("Foundation", 0, 0, 0, 0, true)
 end
@@ -46,6 +54,8 @@ function Building:addPart(name, x, y, z, direction, force)
     -- Спавн объекта
     position = rotateVector(position, self.angle)
     part.object = createObject(part.model, self.position + position, Vector3(0, 0, self.angle + angle))
+
+    triggerClientEvent("notifyBuildingUpdate", self.element)
     return true
 end
 
@@ -114,7 +124,7 @@ function Building:updateAnchors()
             table.insert(anchors, anchor)
         end
     end
-    triggerClientEvent("updateBuilding", resourceRoot, anchors)
+    self.anchors = anchors
 end
 
 -- Создаёт сетку с заданной размерностью
@@ -134,3 +144,10 @@ function Building:createGrid(dim)
 
     return setmetatable({}, mt[1])
 end
+
+addEvent("requireBuildingAnchors", true)
+addEventHandler("requireBuildingAnchors", resourceRoot, function ()
+    if buildings[source] then
+        triggerClientEvent(client, "updateBuildingAnchors", source, buildings[source].anchors)
+    end
+end)

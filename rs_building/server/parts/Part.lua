@@ -20,6 +20,5 @@ end
 
 -- Возвращает список точек, к которым можно добавлять детали
 function Part:getAnchors()
-    -- { name = "Wall", position = {0, 0, 0}, [direction = 2] }
     return false
 end
