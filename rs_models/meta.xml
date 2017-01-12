@@ -1,0 +1,28 @@
+<meta>
+	<!-- MTARust gamemode by Wherry (C) 2016 -->
+	<info author="Wherry"/>
+	<oop>true</oop>
+	<min_mta_version client="1.5.2" server="1.5.2"/>
+
+	<script type="client" src="client/models.lua"/>
+	<script type="shared" src="shared/exports.lua"/>
+	<export type="shared" function="getModel"/>
+	
+	<file src="models/structures.txd"/>
+	<file src="models/Foundation.dff"/>
+	<file src="models/Foundation.col"/>
+	<file src="models/Floor.dff"/>
+	<file src="models/Floor.col"/>
+	<file src="models/WallDoor.dff"/>
+	<file src="models/WallDoor.col"/>
+	<file src="models/WallWindow.dff"/>
+	<file src="models/WallWindow.col"/>
+	<file src="models/Wall.dff"/>
+	<file src="models/Wall.col"/>
+	<file src="models/Stairway.dff"/>
+	<file src="models/Stairway.col"/>
+	<file src="models/Door.dff"/>
+	<file src="models/Door.col"/>
+	<file src="models/Hatchet.dff"/>
+	<file src="models/Hatchet.txd"/>
+</meta>

@@ -1,0 +1,14 @@
+<meta>
+	<oop>true</oop>
+
+	<!-- Scripts -->
+    <script type="shared" src="shared/lib/middleclass.lua"/>
+    <script type="shared" src="shared/part_sizing.lua"/>
+    <script type="shared" src="shared/direction.lua"/>
+    
+    <script type="server" src="server/Building.lua"/>
+    <script type="server" src="server/parts/Part.lua"/>
+    <script type="server" src="server/parts/Foundation.lua"/>
+
+    <script type="server" src="server/test.lua"/>
+</meta>
