@@ -1,14 +1,22 @@
 <meta>
 	<oop>true</oop>
 
-	<!-- Scripts -->
+	<!-- Shared scripts -->
     <script type="shared" src="shared/lib/middleclass.lua"/>
+
+    <!-- Server-side scripts -->
+    <script type="shared" src="shared/utils.lua"/>
     <script type="shared" src="shared/part_sizing.lua"/>
     <script type="shared" src="shared/direction.lua"/>
     
     <script type="server" src="server/Building.lua"/>
     <script type="server" src="server/parts/Part.lua"/>
     <script type="server" src="server/parts/Foundation.lua"/>
+    <script type="server" src="server/parts/Wall.lua"/>
+    <script type="server" src="server/parts/Floor.lua"/>
 
     <script type="server" src="server/test.lua"/>
+
+    <!-- Client-side scripts -->
+    <script type="client" src="client/anchors.lua"/>
 </meta>
