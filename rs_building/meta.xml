@@ -19,5 +19,6 @@
 
     <!-- Client-side scripts -->
     <script type="client" src="client/BuildingClient.lua"/>
-    <script type="client" src="client/preview.lua"/>
+    <script type="client" src="client/SnapRules.lua"/>
+    <script type="client" src="client/PartPreview.lua"/>
 </meta>

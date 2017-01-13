@@ -103,7 +103,7 @@ end
 addEvent("buildPart", true)
 addEventHandler("buildPart", resourceRoot, function (name, x, y, z, direction)
     if source == resourceRoot then
-        -- Создать новую постройку
+        -- Создать новую постройку        
         Building:new(Vector3(x, y, z), direction)
     else
         -- Добавить к существующей постройке
