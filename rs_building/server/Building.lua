@@ -52,6 +52,12 @@ function Building:addPart(name, x, y, z, direction, force)
     -- Спавн объекта
     position = rotateVector(position, self.angle)
     part.object = createObject(part.model, self.position + position, Vector3(0, 0, self.angle + angle))
+    part.object.parent = self.element
+
+    -- TODO: Streamed data
+    part.object:setData("gridPosition", {x, y, z})
+    part.object:setData("direction", direction)
+    part.object:setData("name", name)
     return true
 end
 
@@ -94,12 +100,17 @@ function Building:createGrid(dim)
     return setmetatable({}, mt[1])
 end
 
-addEvent("placePart", true)
-addEventHandler("placePart", resourceRoot, function (name, position, direction)
-    local building = buildings[source]
-    if not building then
-        return
+addEvent("buildPart", true)
+addEventHandler("buildPart", resourceRoot, function (name, x, y, z, direction)
+    if source == resourceRoot then
+        -- Создать новую постройку
+        Building:new(Vector3(x, y, z), direction)
+    else
+        -- Добавить к существующей постройке
+        local building = buildings[source]
+        if not building then
+            return
+        end
+        building:addPart(name, x, y, z, direction)
     end
-    local x, y, z = unpack(position)
-    building:addPart(name, x, y, z, direction)
 end)
