@@ -11,7 +11,7 @@ function Building:initialize(worldPosition, worldAngle)
     self.grid = self:createGrid(3)
     self.parts = {}
     -- Элемент для синхронизации
-    self.element = createObject(1337, worldPosition)
+    self.element = createObject(1337, worldPosition, Vector3(0, 0, worldAngle))
     self.element.alpha = 0
     self.element:setCollisionsEnabled(false)
     self.element:setData("isBuilding", true)
@@ -150,4 +150,14 @@ addEventHandler("requireBuildingAnchors", resourceRoot, function ()
     if buildings[source] then
         triggerClientEvent(client, "updateBuildingAnchors", source, buildings[source].anchors)
     end
+end)
+
+addEvent("placePart", true)
+addEventHandler("placePart", resourceRoot, function (name, position, direction)
+    local building = buildings[source]
+    if not building then
+        return
+    end
+    local x, y, z = unpack(position)
+    building:addPart(name, x, y, z, direction)
 end)
