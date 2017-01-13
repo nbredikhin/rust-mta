@@ -17,8 +17,3 @@ end
 function Part:calculatePosition(x, y, z, direction)
     return Vector3(), 0
 end
-
--- Возвращает список точек, к которым можно добавлять детали
-function Part:getAnchors()
-    return false
-end

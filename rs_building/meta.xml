@@ -18,6 +18,5 @@
     <script type="server" src="server/test.lua"/>
 
     <!-- Client-side scripts -->
-    <script type="client" src="client/anchors.lua"/>
     <script type="client" src="client/preview.lua"/>
 </meta>

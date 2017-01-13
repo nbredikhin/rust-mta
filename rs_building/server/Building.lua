@@ -49,13 +49,9 @@ function Building:addPart(name, x, y, z, direction, force)
     -- Добавление детали к постройке
     self.grid[x][y][z] = part
     self.parts[part] = true
-    -- Строительные точки
-    self:updateAnchors()
     -- Спавн объекта
     position = rotateVector(position, self.angle)
     part.object = createObject(part.model, self.position + position, Vector3(0, 0, self.angle + angle))
-
-    triggerClientEvent("notifyBuildingUpdate", self.element)
     return true
 end
 
@@ -80,53 +76,6 @@ function Building:checkPart(x, y, z, direction, name)
     return true
 end
 
-function Building:addAnchor(anchor)
-    if not anchor then
-        return false
-    end
-    local partClass = _G[anchor.name]
-    if not partClass then
-        return false
-    end    
-    local x, y, z = anchor.x, anchor.y, anchor.z
-    for i, a in ipairs(self.anchors) do
-        if a.x == x and a.y == y and a.z == z then
-            return false
-        end
-    end
-    if not partClass.isPlacementAllowed({building=self}, x, y, z, anchor.direction or 0) then
-        return false
-    end
-    anchor.position, anchor.angle = partClass.calculatePosition(nil, x, y, z, anchor.direction or 0)
-    anchor.position = anchor.position + Vector3(0, 0, anchor.oz)
-    anchor.position = self.position + rotateVector(anchor.position, self.angle)
-    anchor.angle = self.angle + anchor.angle
-
-    anchor.position = {anchor.position.x, anchor.position.y, anchor.position.z}
-    table.insert(self.anchors, anchor)
-    return true
-end
-
-function Building:updateAnchors()
-    self.anchors = {}
-    for part in pairs(self.parts) do
-        local anchors = part:getAnchors()
-        if anchors then
-            for i, anchor in ipairs(anchors) do
-                self:addAnchor(anchor)
-            end
-        end
-    end
-
-    local anchors = {}
-    for i, anchor in ipairs(self.anchors) do
-        if not self:checkPart(anchor.x, anchor.y, anchor.z) then
-            table.insert(anchors, anchor)
-        end
-    end
-    self.anchors = anchors
-end
-
 -- Создаёт сетку с заданной размерностью
 function Building:createGrid(dim)
     local mt = {}
@@ -144,13 +93,6 @@ function Building:createGrid(dim)
 
     return setmetatable({}, mt[1])
 end
-
-addEvent("requireBuildingAnchors", true)
-addEventHandler("requireBuildingAnchors", resourceRoot, function ()
-    if buildings[source] then
-        triggerClientEvent(client, "updateBuildingAnchors", source, buildings[source].anchors)
-    end
-end)
 
 addEvent("placePart", true)
 addEventHandler("placePart", resourceRoot, function (name, position, direction)

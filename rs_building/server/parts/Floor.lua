@@ -26,7 +26,3 @@ function Floor:calculatePosition(x, y, z, direction)
 
     return position, getDirectionAngle(direction)
 end
-
-function Floor:getAnchors()
-    return Foundation.getAnchors(self)
-end
