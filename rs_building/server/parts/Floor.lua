@@ -24,5 +24,5 @@ function Floor:calculatePosition(x, y, z, direction)
     position.y = y * PartSizing.Floor.y / 2
     position.z = z * (PartSizing.Wall.z) / 2 - PartSizing.Floor.z
 
-    return position, getDirectionAngle(direction)
+    return position, 0
 end

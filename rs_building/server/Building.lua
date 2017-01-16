@@ -111,6 +111,10 @@ addEventHandler("buildPart", resourceRoot, function (name, x, y, z, direction)
         if not building then
             return
         end
+        outputDebugString(string.format("Add part '%s' at (%i, %i, %i) direction=%i",
+            name,
+            x, y, z,
+            direction))        
         building:addPart(name, x, y, z, direction)
     end
 end)

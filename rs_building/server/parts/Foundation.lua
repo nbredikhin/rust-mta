@@ -16,5 +16,5 @@ function Foundation:calculatePosition(x, y, z, direction)
     position.y = y * PartSizing.Foundation.y / 2
     position.z = z * PartSizing.Foundation.z / 2
 
-    return position, getDirectionAngle(direction)
+    return position, 0
 end

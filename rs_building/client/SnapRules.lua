@@ -10,6 +10,7 @@ rules["Foundation"]["world"] = {
 rules["Foundation"]["Foundation"] = {
     snap = {
         type = "direction",
+        forceAngle = 0,
         distance = PartSizing.Foundation.x,
         gridOffset = function (x, y, z, direction)
             local dx, dy = getDirectionOffset(direction)
@@ -50,6 +51,18 @@ rules["Floor"]["Foundation"] = {
     }
 }
 rules["Floor"]["Floor"] = rules["Floor"]["Foundation"]
+rules["Floor"]["Wall"] = {
+    snap = {
+        type = "side",
+        side = 1,
+        distance = PartSizing.Foundation.x / 2,
+        offsetZ = PartSizing.Wall.z / 2 - PartSizing.Floor.z,
+        gridOffset = function (x, y, z, direction, gridDirection)
+            local dx, dy = getDirectionOffset(gridDirection)
+            return x - dx, y - dy, z + 1
+        end
+    }
+}
 --------------------------------------------------------------------------------
 rules["Stairway"] = {}
 rules["Stairway"]["Foundation"] = { 
@@ -60,7 +73,49 @@ rules["Stairway"]["Foundation"] = {
         rotation = 90,
     }   
 }
-rules["Stairway"]["Floor"] = rules["Stairway"]["Foundation"] 
+rules["Stairway"]["Floor"] = rules["Stairway"]["Foundation"]
+
+
+local function sideSnap(snap, object2, x, y, z, rotation)
+    -- Позиция, куда смотрит игрок, относительно объекта
+    local relativePosition = {
+        x = x - object2.position.x,
+        y = y - object2.position.y
+    }
+
+    -- Массив векторов направлений
+    local directionVectors = {}
+    if not snap.side then
+        snap.side = 0
+    end
+    directionVectors[1] = getMatrixDirection(object2.matrix, snap.side)
+    directionVectors[2] = getMatrixDirection(object2.matrix, getOppositeDirection(snap.side))
+
+    -- Поиск ближайшего направления
+    local minDistance, minPoint, minIndex = 9999, nil, -1
+    for i, point in ipairs(directionVectors) do
+        local distance = getDistanceBetweenPoints2D(point.x, point.y, relativePosition.x, relativePosition.y)
+        if distance < minDistance then
+            minDistance = distance
+            minPoint = point
+            minIndex = i
+        end
+    end
+    if not snap.offsetZ then
+        snap.offsetZ = 0
+    end
+
+    local direction = minIndex - 1
+    x = object2.position.x + minPoint.x * snap.distance
+    y = object2.position.y + minPoint.y * snap.distance
+    z = object2.position.z + snap.offsetZ
+    rotation = -90 * direction + 90 + object2.rotation.z
+    if snap.forceAngle then
+        rotation = object2.rotation.z + snap.forceAngle
+    end    
+    return x, y, z, rotation, direction - snap.side
+end
+
 
 local function directionSnap(snap, object2, x, y, z, rotation)
     -- Позиция, куда смотрит игрок, относительно объекта
@@ -86,12 +141,14 @@ local function directionSnap(snap, object2, x, y, z, rotation)
             minIndex = i
         end
     end
-
     local direction = minIndex - 1
     x = object2.position.x + minPoint.x * snap.distance
     y = object2.position.y + minPoint.y * snap.distance
     z = object2.position.z
-    rotation = 90 * direction + object2.rotation.z + 90
+    rotation = -90 * direction + 90 + object2.rotation.z
+    if snap.forceAngle then
+        rotation = object2.rotation.z + snap.forceAngle
+    end
     return x, y, z, rotation, direction
 end
 
@@ -138,13 +195,12 @@ function SnapRules.getSnap(object1, partName1, object2, partName2, x, y, z, rota
             x, y, z, rotation, direction = directionSnap(snap, object2, x, y, z, rotation)
         elseif snap.type == "offset" then
             x, y, z, rotation, direction = offsetSnap(snap, object2, x, y, z, rotation)
+        elseif snap.type == "side" then
+            x, y, z, rotation, direction = sideSnap(snap, object2, x, y, z, rotation)
         end
 
         if type(snap.gridOffset) == "function" then
-            local ox, oy, oz = snap.gridOffset(gx, gy, gz, direction)
-            gx = gx + ox
-            gy = gy + oy
-            gz = gz + oz
+            gx, gy, gz = snap.gridOffset(gx, gy, gz, direction, BuildingClient.getPartGridDirection(object2))
         elseif type(snap.gridOffset) == "table" then
             local ox, oy, oz = unpack(snap.gridOffset)
             gx = gx + ox

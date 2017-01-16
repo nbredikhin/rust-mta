@@ -100,16 +100,18 @@ local function placePart()
     local building = BuildingClient.getPartBuilding(targetObject)
     local x, y, z
     local direction
-    if building then
+    if building and previewGridPosition then
         x, y, z = unpack(previewGridPosition)
         direction = previewDirection
-    else
+    elseif previewPosition then
         building = resourceRoot
         x, y, z = unpack(previewPosition)
         direction = previewAngle
+    else
+        return
     end
 
-    outputDebugString("Build part " .. tostring(PartPreview.partName) .. " " ..  tostring(x) .. " " .. tostring(y) .. " " .. tostring(z))
+    -- outputDebugString("Build part " .. tostring(PartPreview.partName) .. " " ..  tostring(x) .. " " .. tostring(y) .. " " .. tostring(z))
     triggerServerEvent("buildPart", building, PartPreview.partName, x, y, z, previewDirection)
 end
 
@@ -156,7 +158,7 @@ addEventHandler("onClientResourceStart", resourceRoot, function ()
     -- highlightShader = DxShader("assets/shaders/highlight.fx")
     -- highlightShader:setValue("gColor", {0, 255, 0, 150})
 
-    PartPreview.showPart("Wall")
+    PartPreview.showPart("Floor")
     bindKey("mouse2", "down", placePart)
 end)
 

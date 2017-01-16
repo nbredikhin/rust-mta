@@ -19,5 +19,5 @@ function Wall:calculatePosition(x, y, z, direction)
     position.y = y * PartSizing.Floor.y / 2 
     position.z = z * PartSizing.Wall.z / 2
 
-    return position, getDirectionAngle(direction) + 90
+    return position, -getDirectionAngle(direction) + 90
 end
