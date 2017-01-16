@@ -21,4 +21,6 @@
     <script type="client" src="client/BuildingClient.lua"/>
     <script type="client" src="client/SnapRules.lua"/>
     <script type="client" src="client/PartPreview.lua"/>
+
+    <file src="assets/highlight.fx"/>
 </meta>

@@ -34,7 +34,8 @@ rules["Wall"]["Floor"] = rules["Wall"]["Foundation"]
 rules["Wall"]["Wall"] = {
     snap = {
         type = "offset",
-        offset = {x = 0, y = 0, z = PartSizing.Wall.z / 2 - PartSizing.Floor.z},
+        copyDirection = true,
+        offset = {x = 0, y = 0, z = PartSizing.Wall.z / 2},
         gridOffset = {0, 0, 1},
     }
 }
@@ -55,6 +56,7 @@ rules["Floor"]["Wall"] = {
     snap = {
         type = "side",
         side = 1,
+        forceAngle = 0,
         distance = PartSizing.Foundation.x / 2,
         offsetZ = PartSizing.Wall.z / 2 - PartSizing.Floor.z,
         gridOffset = function (x, y, z, direction, gridDirection)
@@ -111,7 +113,7 @@ local function sideSnap(snap, object2, x, y, z, rotation)
     z = object2.position.z + snap.offsetZ
     rotation = -90 * direction + 90 + object2.rotation.z
     if snap.forceAngle then
-        rotation = object2.rotation.z + snap.forceAngle
+        rotation = BuildingClient.getPartBuilding(object2).rotation.z + snap.forceAngle
     end    
     return x, y, z, rotation, direction - snap.side
 end
@@ -147,7 +149,7 @@ local function directionSnap(snap, object2, x, y, z, rotation)
     z = object2.position.z
     rotation = -90 * direction + 90 + object2.rotation.z
     if snap.forceAngle then
-        rotation = object2.rotation.z + snap.forceAngle
+        rotation = BuildingClient.getPartBuilding(object2).rotation.z + snap.forceAngle
     end
     return x, y, z, rotation, direction
 end
@@ -170,6 +172,9 @@ local function offsetSnap(snap, object2, x, y, z, rotation)
     end
     if snap.rotaiton then
         rotation = rotation + snap.rotation
+    end
+    if snap.copyDirection then
+        direction = BuildingClient.getPartGridDirection(object2)
     end
     return x, y, z, rotation, direction
 end

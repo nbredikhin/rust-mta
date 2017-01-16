@@ -127,9 +127,10 @@ function PartPreview.showPart(name)
     if not PartPreview.partName or not object then
         -- Создать объект
         object = createObject(model, 0, 0, -10)
+        object.alpha = 150
         object:setCollisionsEnabled(false)
         -- Применить шейдер
-        -- highlightShader:applyToWorldTexture("*", object)
+        highlightShader:applyToWorldTexture("*", object)
 
         addEventHandler("onClientPreRender", root, update)      
     else
@@ -155,8 +156,8 @@ function PartPreview.hidePart()
 end
 
 addEventHandler("onClientResourceStart", resourceRoot, function ()
-    -- highlightShader = DxShader("assets/shaders/highlight.fx")
-    -- highlightShader:setValue("gColor", {0, 255, 0, 150})
+    highlightShader = DxShader("assets/highlight.fx")
+    highlightShader:setValue("gColor", {0, 255, 0, 255})
 
     PartPreview.showPart("Floor")
     bindKey("mouse2", "down", placePart)
