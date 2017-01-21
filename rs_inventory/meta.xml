@@ -1,6 +1,9 @@
 <meta>
     <oop>true</oop>
 
-    <script type="client" src="client/main.lua"/>
+    <script type="shared" src="shared/globals.lua"/>
+
+    <script type="client" src="client/InventoryClient.lua"/>
+    <script type="client" src="client/drawing.lua"/>
     <export type="client" function="setVisible"/>
 </meta>

@@ -3,11 +3,11 @@ local isVisible = false
 
 local SLOT_SIZE = 65
 local SLOT_SPACING = 10
+local ICON_SPACING = 5
 
 local HOTBAR_SLOTS_COUNT = 6
 local HOTBAR_OFFSET = 10
 
-local INVENTORY_SIZE = 30
 local INVENTORY_WIDTH = 6
 local INVENTORY_HEIGHT = 5
 
@@ -53,6 +53,19 @@ local function drawSlots()
                 color = tocolor(40, 40, 40, 230)
             end
             dxDrawRectangle(slot.x, slot.y, SLOT_SIZE, SLOT_SIZE, color)
+            -- Икнока
+            local item = InventoryClient.getItem(slot.id)
+            if item then
+                dxDrawImage(slot.x + ICON_SPACING, slot.y + ICON_SPACING, SLOT_SIZE - ICON_SPACING * 2, 
+                    SLOT_SIZE - ICON_SPACING * 2, exports.rs_items:getItemIcon(item.name))
+
+                if item.count > 1 then
+                    dxDrawText("x" .. item.count, slot.x + SLOT_SIZE - 2, slot.y + SLOT_SIZE,
+                        slot.x + SLOT_SIZE - 2, slot.y + SLOT_SIZE, tocolor(255, 255, 255),
+                        1, "default", "right", "bottom")
+                end
+            end
+            -- Номер на хотбаре
             if slot.hotbarIndex then
                 dxDrawText(slot.hotbarIndex, slot.x + 2, slot.y)
             end
@@ -75,7 +88,7 @@ addEventHandler("onClientResourceStart", resourceRoot, function ()
     inventoryHeight = (SLOT_SIZE + SLOT_SPACING) * INVENTORY_HEIGHT - SLOT_SPACING
     inventoryY = screenSize.y / 2 - inventoryHeight / 2
     local sy = inventoryY
-    for i = 1, INVENTORY_SIZE do
+    for i = 1, INVENTORY_SIZE - HOTBAR_SLOTS_COUNT do
         createSlot(sx, sy)
         sx = sx + SLOT_SIZE + SLOT_SPACING
         if i % INVENTORY_WIDTH == 0 then
