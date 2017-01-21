@@ -92,7 +92,7 @@ local function update(deltaTime)
     end
 end
 
-local function placePart()
+local function buildPart()
     if not PartPreview.partName then
         return false
     end
@@ -160,7 +160,7 @@ addEventHandler("onClientResourceStart", resourceRoot, function ()
     highlightShader:setValue("gColor", {0, 255, 0, 255})
 
     PartPreview.showPart("Floor")
-    bindKey("mouse2", "down", placePart)
+    bindKey("mouse2", "down", buildPart)
 end)
 
 addCommandHandler("part", function(cmd, name)
