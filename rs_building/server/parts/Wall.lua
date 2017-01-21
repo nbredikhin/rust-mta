@@ -3,12 +3,12 @@ Wall = class("Wall", Part)
 function Wall:isPlacementAllowed(x, y, z, direction)
     local isAllowed = false
     local dx, dy = getDirectionOffset(direction)
-    isAllowed = isAllowed or self.building:checkPart(x + dx, y + dy, z, nil, "Foundation")
-    isAllowed = isAllowed or self.building:checkPart(x + dx, y + dy, z, nil, "Floor")
+    isAllowed = isAllowed or self.building:checkPart(x + dx, y + dy, 0, nil, "Foundation")
+    --isAllowed = isAllowed or self.building:checkPart(x + dx, y + dy, z, nil, "Floor")
 
     dx, dy = getDirectionOffset(getOppositeDirection(direction))
-    isAllowed = isAllowed or self.building:checkPart(x + dx, y + dy, z, nil, "Foundation")
-    isAllowed = isAllowed or self.building:checkPart(x + dx, y + dy, z, nil, "Floor")
+    isAllowed = isAllowed or self.building:checkPart(x + dx, y + dy, 0, nil, "Foundation")
+    --isAllowed = isAllowed or self.building:checkPart(x + dx, y + dy, z, nil, "Floor")   
 
     return isAllowed    
 end

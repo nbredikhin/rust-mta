@@ -13,6 +13,8 @@
     <script type="server" src="server/parts/Part.lua"/>
     <script type="server" src="server/parts/Foundation.lua"/>
     <script type="server" src="server/parts/Wall.lua"/>
+    <script type="server" src="server/parts/WallWindow.lua"/>
+    <script type="server" src="server/parts/WallDoor.lua"/>
     <script type="server" src="server/parts/Floor.lua"/>
 
     <script type="server" src="server/test.lua"/>

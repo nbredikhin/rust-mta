@@ -68,7 +68,7 @@ end
 -- Проверяет существование детали в координатах x, y, z
 -- Если указан direction, проверяет направление
 -- Если указан name, проверяет название детали
-function Building:checkPart(x, y, z, direction, name)
+function Building:checkPart(x, y, z, direction, name, instanceof)
     local part = self.grid[x][y][z]
     if not part then
         return false
@@ -77,6 +77,9 @@ function Building:checkPart(x, y, z, direction, name)
         return false
     end
     if name and part.name ~= name then
+        return false
+    end
+    if instanceof and not part:isInstanceOf(instanceof) then
         return false
     end
     return true

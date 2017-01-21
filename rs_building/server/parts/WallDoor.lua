@@ -1,0 +1,1 @@
+WallDoor = class("WallDoor", Wall)

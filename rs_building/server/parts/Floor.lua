@@ -10,7 +10,7 @@ function Floor:isPlacementAllowed(x, y, z, direction)
     local wallsCount = 0
     for i = 1, 4 do 
         local dx, dy = getDirectionOffset(i - 1)
-        if self.building:checkPart(x + dx, y + dy, z - 1, nil, "Wall") then
+        if self.building:checkPart(x + dx, y + dy, z - 1, nil, nil, Wall) then
             wallsCount = wallsCount + 1
         end
     end

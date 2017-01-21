@@ -6,6 +6,7 @@ local rules = {}
 rules["Foundation"] = {}
 rules["Foundation"]["world"] = {
     offset = {x = 0, y = 0, z = 0.5},
+    rotation = 90
 }
 rules["Foundation"]["Foundation"] = {
     snap = {
@@ -39,6 +40,8 @@ rules["Wall"]["Wall"] = {
         gridOffset = {0, 0, 1},
     }
 }
+rules["Wall"]["WallWindow"] = rules["Wall"]["Wall"]
+rules["Wall"]["WallDoor"] = rules["Wall"]["Wall"]
 --------------------------------------------------------------------------------
 rules["WallWindow"] = rules["Wall"]
 rules["WallDoor"] = rules["Wall"]
@@ -65,6 +68,8 @@ rules["Floor"]["Wall"] = {
         end
     }
 }
+rules["Floor"]["WallDoor"] = rules["Floor"]["Wall"]
+rules["Floor"]["WallWindow"] = rules["Floor"]["Wall"]
 --------------------------------------------------------------------------------
 rules["Stairway"] = {}
 rules["Stairway"]["Foundation"] = { 
