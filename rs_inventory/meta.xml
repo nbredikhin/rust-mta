@@ -1,9 +1,14 @@
 <meta>
-    <oop>true</oop>
+    <script type="shared" src="shared/items.lua"/>
+    <script type="shared" src="shared/weapons.lua"/>
+    <script type="shared" src="shared/building.lua"/>
 
-    <script type="shared" src="shared/globals.lua"/>
+    <script type="client" src="client/icons.lua"/>
+    <export type="client" function="getItemIcon"/>
 
-    <script type="client" src="client/InventoryClient.lua"/>
-    <script type="client" src="client/drawing.lua"/>
-    <export type="client" function="setVisible"/>
+    <!-- Icons -->
+    <file src="assets/placeholder.png"/>
+
+    <file src="assets/icons/AK47.png"/>
+    <file src="assets/icons/Foundation.png"/>
 </meta>
