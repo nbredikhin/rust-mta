@@ -1,0 +1,12 @@
+<meta>
+    <oop>true</oop>
+
+    <script type="server" src="config.lua"/>
+    <script type="server" src="discord.lua"/>
+
+    <export type="server" function="outputDiscordMessage"/>
+
+    <aclrequest>
+        <right name="function.fetchRemote" access="true"/>
+    </aclrequest>
+</meta>

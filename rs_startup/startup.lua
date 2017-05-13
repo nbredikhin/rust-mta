@@ -16,6 +16,11 @@ local function setResourceRunning(resourceName, startOrStop)
     end
 end
 
+function isResourceRunning(resourceName)
+    local resource = getResourceFromName(resourceName)
+    return resource and resource.state == "running"
+end
+
 local function outputStartupMessage(...)
     if not Config.verboseMode and not force then
         return
@@ -50,9 +55,17 @@ addEventHandler("onResourceStart", resourceRoot, function ()
     end
 
     outputChatBox(Config.welcomeMessage, root, 0, 255, 0, true)
+
+    if isResourceRunning("rs_discord") then
+        exports.rs_discord:outputDiscordMessage("Server is running")
+    end
 end)
 
 addEventHandler("onResourceStop", resourceRoot, function ()
+    if isResourceRunning("rs_discord") then
+        exports.rs_discord:outputDiscordMessage("Server is stopping")
+    end
+
     for i, resourceName in ipairs(Config.resourceList) do
         setResourceRunning(resourceName, false)
     end
