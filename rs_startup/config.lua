@@ -13,5 +13,6 @@ Config.resourceList = {
     "rs_building",
     "rs_inventory",
     "rs_gui_hud",
-    "rs_gui_inventory"
+    "rs_gui_inventory",
+    "rs_spawn",
 }

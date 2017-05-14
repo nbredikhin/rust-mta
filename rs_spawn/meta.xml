@@ -1,0 +1,8 @@
+<meta>
+    <oop>true</oop>
+
+    <script type="server" src="server/spawn_positions.lua"/>
+    <script type="server" src="server/spawn.lua"/>
+
+    <export type="server" function="respawnPlayer"/>
+</meta>
