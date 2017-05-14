@@ -1,0 +1,6 @@
+<meta>
+    <oop>true</oop>
+
+    <script type="server" src="water.lua"/>
+    <map src="world.map" dimension="0"></map>
+</meta>
