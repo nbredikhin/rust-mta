@@ -54,7 +54,7 @@ function addInventoryItem(id, item)
     end
     local inventory = getInventory(id)
     if not inventory then
-        return false, "bad_inventory"
+        return false, "no_inventory"
     end
 
     for i = 1, inventory.size do
@@ -74,7 +74,7 @@ function removeInventoryItem(id, index)
     end
     local inventory = getInventory(id)
     if not inventory then
-        return false, "bad_inventory"
+        return false, "no_inventory"
     end
     if inventory.items[index] then
         inventory.items[index] = nil
@@ -92,7 +92,7 @@ function moveInventoryItem(id, index, newIndex)
     end
     local inventory = getInventory(id)
     if not inventory then
-        return false, "bad_inventory"
+        return false, "no_inventory"
     end
     if newIndex > inventory.size then
         return false, "invalid_index"
@@ -115,7 +115,7 @@ function transferInventoryItem(id1, id2, index1, index2)
     local inventory1 = getInventory(id1)
     local inventory2 = getInventory(id2)
     if not inventory1 or not inventory2 then
-        return false, "bad_inventory"
+        return false, "no_inventory"
     end
     local item = inventory1.items[index1]
     if not item then

@@ -1,15 +1,15 @@
 InventoryClient = {}
 InventoryClient.items = {
-    {name = "AK47", count = 1},
-    false,
-    false,
-    {name = "Foundation", count = 50},
-    false,
-    false,
-    {name = "Foundation", count = 50},
-    {name = "Foundation", count = 50},
-    {name = "Foundation", count = 50},
-    {name = "Foundation", count = 26},
+    {name = "ak47", count = 1},
+    nil,
+    nil,
+    {name = "foundation", count = 50},
+    nil,
+    nil,
+    {name = "foundation", count = 50},
+    {name = "foundation", count = 50},
+    {name = "foundation", count = 50},
+    {name = "foundation", count = 26},
 }
 
 

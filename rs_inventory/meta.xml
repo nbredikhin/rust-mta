@@ -1,7 +1,7 @@
 <meta>
     <script type="shared" src="shared/items.lua"/>
-    <script type="shared" src="shared/weapons.lua"/>
-    <script type="shared" src="shared/building.lua"/>
+    <script type="shared" src="shared/items_weapons.lua"/>
+    <script type="shared" src="shared/items_building.lua"/>
 
     <script type="server" src="server/inventory.lua"/>
 
@@ -11,6 +11,6 @@
     <!-- Icons -->
     <file src="assets/placeholder.png"/>
 
-    <file src="assets/icons/AK47.png"/>
-    <file src="assets/icons/Foundation.png"/>
+    <file src="assets/icons/ak47.png"/>
+    <file src="assets/icons/foundation.png"/>
 </meta>

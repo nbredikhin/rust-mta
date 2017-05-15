@@ -1,5 +1,5 @@
 local textures = {}
-local placeholderIcon 
+local placeholderIcon
 
 function getItemIcon(name)
     if not name then
