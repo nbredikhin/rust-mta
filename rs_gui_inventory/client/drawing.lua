@@ -34,7 +34,7 @@ end
 local function drawSlots()
     if isVisible then
         dxDrawRectangle(0, 0, screenSize.x, screenSize.y, tocolor(0, 0, 0, 200))
-        dxDrawRectangle(inventoryX - SLOT_SPACING, inventoryY - INVENTORY_HEADER, inventoryWidth + SLOT_SPACING * 2, 
+        dxDrawRectangle(inventoryX - SLOT_SPACING, inventoryY - INVENTORY_HEADER, inventoryWidth + SLOT_SPACING * 2,
             inventoryHeight + INVENTORY_HEADER + SLOT_SPACING, tocolor(50, 50, 50))
         dxDrawText("INVENTORY", inventoryX, inventoryY - INVENTORY_HEADER + 5)
     end
@@ -47,8 +47,8 @@ local function drawSlots()
     for i, slot in ipairs(slots) do
         if isVisible or slot.hotbarIndex then
             local color = tocolor(30, 30, 30, 230)
-            if mx > slot.x and mx < slot.x + SLOT_SIZE and 
-                my > slot.y and my < slot.y + SLOT_SIZE 
+            if mx > slot.x and mx < slot.x + SLOT_SIZE and
+                my > slot.y and my < slot.y + SLOT_SIZE
             then
                 color = tocolor(40, 40, 40, 230)
             end
@@ -56,8 +56,8 @@ local function drawSlots()
             -- Икнока
             local item = InventoryClient.getItem(slot.id)
             if item then
-                dxDrawImage(slot.x + ICON_SPACING, slot.y + ICON_SPACING, SLOT_SIZE - ICON_SPACING * 2, 
-                    SLOT_SIZE - ICON_SPACING * 2, exports.rs_items:getItemIcon(item.name))
+                dxDrawImage(slot.x + ICON_SPACING, slot.y + ICON_SPACING, SLOT_SIZE - ICON_SPACING * 2,
+                    SLOT_SIZE - ICON_SPACING * 2, exports.rs_inventory:getItemIcon(item.name))
 
                 if item.count > 1 then
                     dxDrawText("x" .. item.count, slot.x + SLOT_SIZE - 2, slot.y + SLOT_SIZE,

@@ -3,6 +3,8 @@
     <script type="shared" src="shared/weapons.lua"/>
     <script type="shared" src="shared/building.lua"/>
 
+    <script type="server" src="server/inventory.lua"/>
+
     <script type="client" src="client/icons.lua"/>
     <export type="client" function="getItemIcon"/>
 
