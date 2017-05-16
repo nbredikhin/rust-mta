@@ -20,6 +20,11 @@ local INVENTORY_HEADER = 40
 
 local slots = {}
 
+-- Слот из которого происходит перетаскивание
+local draggingSlot = nil
+local dragOffsetX = 0
+local dragOffsetY = 0
+
 local function createSlot(x, y, hotbarIndex)
     local slot = {}
 
@@ -44,18 +49,21 @@ local function drawSlots()
     else
         mx, my = mx * screenSize.x, my * screenSize.y
     end
+    local isMouseDown = getKeyState("mouse1")
     for i, slot in ipairs(slots) do
         if isVisible or slot.hotbarIndex then
             local color = tocolor(30, 30, 30, 230)
-            if mx > slot.x and mx < slot.x + SLOT_SIZE and
-                my > slot.y and my < slot.y + SLOT_SIZE
-            then
+
+            local isMouseOver =  mx > slot.x and mx < slot.x + SLOT_SIZE
+                             and my > slot.y and my < slot.y + SLOT_SIZE
+
+            if isMouseOver then
                 color = tocolor(40, 40, 40, 230)
             end
             dxDrawRectangle(slot.x, slot.y, SLOT_SIZE, SLOT_SIZE, color)
             -- Икнока
             local item = InventoryClient.getItem(slot.id)
-            if item then
+            if item and slot ~= draggingSlot then
                 dxDrawImage(slot.x + ICON_SPACING, slot.y + ICON_SPACING, SLOT_SIZE - ICON_SPACING * 2,
                     SLOT_SIZE - ICON_SPACING * 2, exports.rs_inventory:getItemIcon(item.name))
 
@@ -69,8 +77,38 @@ local function drawSlots()
             if slot.hotbarIndex then
                 dxDrawText(slot.hotbarIndex, slot.x + 2, slot.y)
             end
+
+            -- Клик
+            if isMouseDown and isMouseOver and not draggingSlot then
+                draggingSlot = slot
+                dragOffsetX = slot.x - mx
+                dragOffsetY = slot.y - my
+            elseif not isMouseDown and draggingSlot and isMouseOver then
+                if draggingSlot.id ~= slot.id then
+                    iprint("Drag slot", draggingSlot.id, " to ", slot.id)
+                end
+            end
         else
             return
+        end
+    end
+
+    if not isMouseDown then
+        draggingSlot = nil
+    end
+    if draggingSlot then
+        local imageX = mx + dragOffsetX
+        local imageY = my + dragOffsetY
+
+        local item = InventoryClient.getItem(draggingSlot.id)
+
+        dxDrawImage(imageX + ICON_SPACING, imageY + ICON_SPACING, SLOT_SIZE - ICON_SPACING * 2,
+            SLOT_SIZE - ICON_SPACING * 2, exports.rs_inventory:getItemIcon(item.name))
+
+        if item.count > 1 then
+            dxDrawText("x" .. item.count, imageX + SLOT_SIZE - 2, imageY + SLOT_SIZE,
+                imageX + SLOT_SIZE - 2, imageY + SLOT_SIZE, tocolor(255, 255, 255),
+                1, "default", "right", "bottom")
         end
     end
 end
