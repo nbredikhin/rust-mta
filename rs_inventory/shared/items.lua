@@ -1,10 +1,24 @@
 Items = {}
 
-function getItemFromName(name)
-    if not name then
+-- Описывает функции работы с предметами инвентаря
+-- Тип описания:
+-- name -- имя предмета
+-- description -- описание
+-- type -- тип (оружие, здание и пр.)
+-- stack -- кол-во предметов в одной ячейке (стак)
+
+function getItemById(id)
+    if not id then
         return
     end
-    return Items[name]
+    return Items[id]
+end
+
+function itemsCouldBeStacked(id1, id2)
+    local item1 = getItemById(id1)
+    local item2 = getItemById(id2)
+
+    return (id1 == id2) and (item1.stack > 1)
 end
 
 function getAllItems()
@@ -25,5 +39,5 @@ function getItemsByType(typeName)
             table.insert(items, item)
         end
     end
-    return itemms
+    return items
 end
