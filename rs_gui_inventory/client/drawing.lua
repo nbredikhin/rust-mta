@@ -60,6 +60,9 @@ local function drawSlots()
             if isMouseOver then
                 color = tocolor(40, 40, 40, 230)
             end
+            if InventoryClient.getActiveHotbarSlot() == slot.id then
+                color = tocolor(60, 60, 60, 230)
+            end
             dxDrawRectangle(slot.x, slot.y, SLOT_SIZE, SLOT_SIZE, color)
             -- Икнока
             local item = InventoryClient.getItem(slot.id)
@@ -140,7 +143,7 @@ addEventHandler("onClientResourceStart", resourceRoot, function ()
     addEventHandler("onClientRender", root, drawSlots)
 end)
 
-function setVisible(visible)
+function setInventoryVisible(visible)
     if not not visible == isVisible then
         return
     end
@@ -149,6 +152,9 @@ function setVisible(visible)
     showCursor(visible)
 end
 
-bindKey("i", "down", function ()
-    setVisible(not isVisible)
-end)
+local function toggleInventory()
+    setInventoryVisible(not isVisible)
+end
+
+bindKey("i", "down", toggleInventory)
+bindKey("tab", "down", toggleInventory)

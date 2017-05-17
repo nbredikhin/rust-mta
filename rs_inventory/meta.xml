@@ -1,9 +1,12 @@
 <meta>
+    <oop>true</oop>
+
     <script type="shared" src="shared/items.lua"/>
     <script type="shared" src="shared/items_weapons.lua"/>
     <script type="shared" src="shared/items_building.lua"/>
 
     <script type="server" src="server/inventory.lua"/>
+    <script type="server" src="server/hotbar.lua"/>
 
     <script type="client" src="client/icons.lua"/>
     <export type="client" function="getItemIcon"/>
