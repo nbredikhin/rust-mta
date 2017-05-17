@@ -79,13 +79,15 @@ local function drawSlots()
             end
 
             -- Клик
-            if isMouseDown and isMouseOver and not draggingSlot then
-                draggingSlot = slot
-                dragOffsetX = slot.x - mx
-                dragOffsetY = slot.y - my
-            elseif not isMouseDown and draggingSlot and isMouseOver then
-                if draggingSlot.id ~= slot.id then
-                    iprint("Drag slot", draggingSlot.id, " to ", slot.id)
+            if item then
+                if isMouseDown and isMouseOver and not draggingSlot then
+                    draggingSlot = slot
+                    dragOffsetX = slot.x - mx
+                    dragOffsetY = slot.y - my
+                elseif not isMouseDown and draggingSlot and isMouseOver then
+                    if draggingSlot.id ~= slot.id then
+                        iprint("Drag slot", draggingSlot.id, " to ", slot.id)
+                    end
                 end
             end
         else
