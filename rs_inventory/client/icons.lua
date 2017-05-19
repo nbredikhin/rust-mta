@@ -1,22 +1,22 @@
 local textures = {}
 local placeholderIcon
 
-function getItemIcon(name)
-    if not name then
+function getItemIcon(id)
+    if not id then
         return
     end
-    if not Items[name] then
+    if not Items[id] then
         return
     end
-    if textures[name] then
-        return textures[name]
+    if textures[id] then
+        return textures[id]
     end
-    local path = "assets/icons/" .. tostring(name) .. ".png"
+    local path = "assets/icons/" .. tostring(id) .. ".png"
     if not fileExists(path) then
         return placeholderIcon
     end
-    textures[name] = dxCreateTexture(path)
-    return textures[name]
+    textures[id] = dxCreateTexture(path)
+    return textures[id]
 end
 
 addEventHandler("onClientResourceStart", resourceRoot, function ()

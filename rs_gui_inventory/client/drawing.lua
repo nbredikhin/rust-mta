@@ -49,6 +49,7 @@ local function drawSlots()
     else
         mx, my = mx * screenSize.x, my * screenSize.y
     end
+
     local isMouseDown = getKeyState("mouse1")
     for i, slot in ipairs(slots) do
         if isVisible or slot.hotbarIndex then
@@ -68,7 +69,7 @@ local function drawSlots()
             local item = InventoryClient.getItem(slot.id)
             if item and slot ~= draggingSlot then
                 dxDrawImage(slot.x + ICON_SPACING, slot.y + ICON_SPACING, SLOT_SIZE - ICON_SPACING * 2,
-                    SLOT_SIZE - ICON_SPACING * 2, exports.rs_inventory:getItemIcon(item.name))
+                    SLOT_SIZE - ICON_SPACING * 2, exports.rs_inventory:getItemIcon(item.id))
 
                 if item.count > 1 then
                     dxDrawText("x" .. item.count, slot.x + SLOT_SIZE - 2, slot.y + SLOT_SIZE,
@@ -82,15 +83,14 @@ local function drawSlots()
             end
 
             -- Клик
-            if item then
-                if isMouseDown and isMouseOver and not draggingSlot then
-                    draggingSlot = slot
-                    dragOffsetX = slot.x - mx
-                    dragOffsetY = slot.y - my
-                elseif not isMouseDown and draggingSlot and isMouseOver then
-                    if draggingSlot.id ~= slot.id then
-                        iprint("Drag slot", draggingSlot.id, " to ", slot.id)
-                    end
+            if isMouseDown and isMouseOver and not draggingSlot and item then
+                draggingSlot = slot
+                dragOffsetX = slot.x - mx
+                dragOffsetY = slot.y - my
+            elseif not isMouseDown and draggingSlot and isMouseOver then
+                if draggingSlot.id ~= slot.id then
+                    iprint("Drag slot", draggingSlot.id, " to ", slot.id)
+                    InventoryClient.moveItems(draggingSlot.id, slot.id)
                 end
             end
         else
@@ -108,7 +108,7 @@ local function drawSlots()
         local item = InventoryClient.getItem(draggingSlot.id)
 
         dxDrawImage(imageX + ICON_SPACING, imageY + ICON_SPACING, SLOT_SIZE - ICON_SPACING * 2,
-            SLOT_SIZE - ICON_SPACING * 2, exports.rs_inventory:getItemIcon(item.name))
+            SLOT_SIZE - ICON_SPACING * 2, exports.rs_inventory:getItemIcon(item.id))
 
         if item.count > 1 then
             dxDrawText("x" .. item.count, imageX + SLOT_SIZE - 2, imageY + SLOT_SIZE,

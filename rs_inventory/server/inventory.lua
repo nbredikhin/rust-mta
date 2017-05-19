@@ -74,7 +74,7 @@ end
 
 function getInventory(id)
     if not inventories[id] then
-        return false
+        return false, "not_existing"
     end
     return inventories[id]
 end

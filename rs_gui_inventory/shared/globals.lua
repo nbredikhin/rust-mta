@@ -1,1 +1,1 @@
-INVENTORY_SIZE = 36
+INVENTORY_SIZE = exports.rs_inventory:getDefaultPlayerInventorySize()

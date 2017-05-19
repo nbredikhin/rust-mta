@@ -4,18 +4,7 @@ local HOTBAR_SLOTS_COUNT = 6
 local currentHotbarSlot = nil
 
 InventoryClient.items = {
-    {name = "ak47", count = 1},
-    nil,
-    nil,
-    {name = "foundation", count = 50},
-    nil,
-    nil,
-    {name = "foundation", count = 50},
-    {name = "foundation", count = 50},
-    {name = "foundation", count = 50},
-    {name = "foundation", count = 26},
 }
-
 
 function InventoryClient.getItem(slotId)
     if not slotId then
@@ -42,10 +31,27 @@ function InventoryClient.showHotbarSlot(slotId)
     end
 end
 
+function InventoryClient.moveItems(slotIdFrom, slotIdTo)
+    if type(slotIdTo) ~= "number" or type(slotIdFrom) ~= "number" then
+        return false, "bad_arguments"
+    end
+
+    triggerServerEvent("movePlayerItem", root, slotIdFrom, slotIdTo)
+
+    return true
+end
+
+addEvent("onInventoryReceived", true)
+addEventHandler("onInventoryReceived", root, function(inventory)
+    InventoryClient.items = inventory.items
+end)
+
 addEventHandler("onClientResourceStart", resourceRoot, function ()
     for i = 1, HOTBAR_SLOTS_COUNT do
         bindKey(tostring(i), "down", InventoryClient.showHotbarSlot, i)
     end
+
+    triggerServerEvent("getPlayerInventory", root)
 end)
 
 addEventHandler("onClientPlayerWeaponSwitch", localPlayer, function (previousSlot)
