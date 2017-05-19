@@ -3,7 +3,12 @@ function showPlayerHotbarItem(player, item)
         return false
     end
     hidePlayerHotbarItem(player)
-    giveWeapon(player, 30, 30, true)
+
+    local itemDescription = getItemById(item.id)
+    if itemDescription.create then
+        itemDescription.create(player, item)
+    end
+
     player:setData("hotbar_item_id", item.id)
 end
 
@@ -15,7 +20,12 @@ function hidePlayerHotbarItem(player)
     if not id then
         return false
     end
-    takeAllWeapons(player)
+
+    local itemDescription = getItemById(id)
+    if itemDescription.destroy then
+        itemDescription.destroy(player)
+    end
+
     player:removeData("hotbar_item_id")
 end
 
@@ -31,7 +41,7 @@ addEvent("showPlayerHotbarSlot", true)
 addEventHandler("showPlayerHotbarSlot", root, function (slot)
     if slot then
         -- TODO: Получить item в слоте
-        local item = { id = "ak47", count = 1 }
+        local item = { id = "ak47", count = 1, ammo = 0}
 
         showPlayerHotbarItem(client, item)
     else
