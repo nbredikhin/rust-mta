@@ -15,9 +15,12 @@ function createInventoryItem(itemId, count, instance)
         count = 1
     end
 
+    if count > getItemById(itemId).stack then
+        count = getItemById(itemId).stack
+    end
+
     if not instance then
-        iprint("Creating inventory item instance")
-        -- TODO: create instance
+        instance = createItemInstance(itemId)
     end
 
     local item = {
@@ -224,7 +227,6 @@ function transferInventoryItem(id1, id2, index1, index2)
     else
         actualIndex2 = index2
     end
-
 
     inventory1.items[index1] = nil
     inventory2.items[actualIndex2] = item1

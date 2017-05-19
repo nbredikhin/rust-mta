@@ -14,6 +14,21 @@ function getItemById(id)
     return Items[id]
 end
 
+function createItemInstance(id)
+    local item = getItemById(id)
+    local instance = {}
+
+    if not item.instance_props then
+        return instance
+    end
+
+    for k,v in pairs(item.instance_props) do
+        instance[k] = v
+    end
+
+    return instance
+end
+
 function itemsCouldBeStacked(id1, id2)
     local item1 = getItemById(id1)
     local item2 = getItemById(id2)

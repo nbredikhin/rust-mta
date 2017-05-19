@@ -5,5 +5,5 @@ Items["foundation"] = {
     name        = "Foundation",
     description = "Basic foundataion.",
     type        = ITEM_TYPE_BUILDING,
-    stack       = DEFAULT_BUILDING_STACK
+    stack       = DEFAULT_BUILDING_STACK,
 }
