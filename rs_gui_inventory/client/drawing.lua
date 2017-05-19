@@ -61,12 +61,12 @@ local function drawSlots()
             if isMouseOver then
                 color = tocolor(40, 40, 40, 230)
             end
-            if InventoryClient.getActiveHotbarSlot() == slot.id then
+            if exports.rs_inventory:getActiveHotbarSlot() == slot.id then
                 color = tocolor(60, 60, 60, 230)
             end
             dxDrawRectangle(slot.x, slot.y, SLOT_SIZE, SLOT_SIZE, color)
             -- Икнока
-            local item = InventoryClient.getItem(slot.id)
+            local item = exports.rs_inventory:getItem(slot.id)
             if item and slot ~= draggingSlot then
                 dxDrawImage(slot.x + ICON_SPACING, slot.y + ICON_SPACING, SLOT_SIZE - ICON_SPACING * 2,
                     SLOT_SIZE - ICON_SPACING * 2, exports.rs_inventory:getItemIcon(item.id))
@@ -90,7 +90,7 @@ local function drawSlots()
             elseif not isMouseDown and draggingSlot and isMouseOver then
                 if draggingSlot.id ~= slot.id then
                     iprint("Drag slot", draggingSlot.id, " to ", slot.id)
-                    InventoryClient.moveItems(draggingSlot.id, slot.id)
+                    exports.rs_inventory:moveItems(draggingSlot.id, slot.id)
                 end
             end
         else
@@ -105,7 +105,7 @@ local function drawSlots()
         local imageX = mx + dragOffsetX
         local imageY = my + dragOffsetY
 
-        local item = InventoryClient.getItem(draggingSlot.id)
+        local item = exports.rs_inventory:getItem(draggingSlot.id)
 
         dxDrawImage(imageX + ICON_SPACING, imageY + ICON_SPACING, SLOT_SIZE - ICON_SPACING * 2,
             SLOT_SIZE - ICON_SPACING * 2, exports.rs_inventory:getItemIcon(item.id))

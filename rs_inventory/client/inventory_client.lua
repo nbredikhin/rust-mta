@@ -1,23 +1,24 @@
-InventoryClient = {}
-
 local HOTBAR_SLOTS_COUNT = 6
 local currentHotbarSlot = nil
 
-InventoryClient.items = {
-}
+local local_inventory = {}
 
-function InventoryClient.getItem(slotId)
+function getInventory()
+    return local_inventory
+end
+
+function getItem(slotId)
     if not slotId then
         return
     end
-    return InventoryClient.items[slotId]
+    return local_inventory.items[slotId]
 end
 
-function InventoryClient.getActiveHotbarSlot()
+function getActiveHotbarSlot()
     return currentHotbarSlot
 end
 
-function InventoryClient.showHotbarSlot(slotId)
+function showHotbarSlot(slotId)
     slotId = tonumber(slotId)
     if not slotId or slotId > HOTBAR_SLOTS_COUNT or slotId < 1 then
         return
@@ -31,24 +32,23 @@ function InventoryClient.showHotbarSlot(slotId)
     end
 end
 
-function InventoryClient.moveItems(slotIdFrom, slotIdTo)
+function moveItems(slotIdFrom, slotIdTo)
     if type(slotIdTo) ~= "number" or type(slotIdFrom) ~= "number" then
         return false, "bad_arguments"
     end
 
-    triggerServerEvent("movePlayerItem", root, slotIdFrom, slotIdTo)
-
+    triggerServerEvent("movePlayerItem", resourceRoot, slotIdFrom, slotIdTo)
     return true
 end
 
 addEvent("onInventoryReceived", true)
-addEventHandler("onInventoryReceived", root, function(inventory)
-    InventoryClient.items = inventory.items
+addEventHandler("onInventoryReceived", resourceRoot, function(inventory)
+    local_inventory = inventory
 end)
 
 addEventHandler("onClientResourceStart", resourceRoot, function ()
     for i = 1, HOTBAR_SLOTS_COUNT do
-        bindKey(tostring(i), "down", InventoryClient.showHotbarSlot, i)
+        bindKey(tostring(i), "down", showHotbarSlot, i)
     end
 
     triggerServerEvent("getPlayerInventory", root)

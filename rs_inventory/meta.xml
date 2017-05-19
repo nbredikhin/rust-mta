@@ -15,6 +15,13 @@
     <script type="client" src="client/icons.lua"/>
     <export type="client" function="getItemIcon"/>
 
+    <script type="client" src="client/inventory_client.lua"/>
+    <export type="client" function="getItem"/>
+    <export type="client" function="moveItems"/>
+    <export type="client" function="getInventory"/>
+    <export type="client" function="showHotbarSlot"/>
+    <export type="client" function="getActiveHotbarSlot"/>
+
     <!-- Icons -->
     <file src="assets/placeholder.png"/>
 
