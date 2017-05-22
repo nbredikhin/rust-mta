@@ -54,7 +54,7 @@ addEventHandler("onClientResourceStart", resourceRoot, function ()
         bindKey(tostring(i), "down", showHotbarSlot, i)
     end
 
-    triggerServerEvent("getPlayerInventory", root)
+    triggerServerEvent("getClientInventory", root)
 end)
 
 addEventHandler("onClientPlayerWeaponSwitch", localPlayer, function (previousSlot)

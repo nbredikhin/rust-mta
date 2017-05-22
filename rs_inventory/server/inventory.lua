@@ -72,11 +72,25 @@ function destroyInventory(id)
     end
 end
 
-function getInventory(id)
+function getInventoryItems(id)
+    if not id then
+        return false, "invalid_id"
+    end
     if not inventories[id] then
         return false, "not_existing"
     end
     return inventories[id]
+end
+
+function getInventoryItem(id, index)
+    if type(id) ~= "number" or type(index) ~= "number" then
+        return false, "bad_args"
+    end
+    local inventory = getInventoryItems(id)
+    if not inventory then
+        return false, "no_inventory"
+    end
+    return inventory.items[index]
 end
 
 function transferItemCount(item1, item2)
@@ -105,7 +119,7 @@ function getIndexInInventoryByItem(id, item)
     if type(id) ~= "number" or type(item) ~= "table" then
         return false, "bad_args"
     end
-    local inventory = getInventory(id)
+    local inventory = getInventoryItems(id)
     if not inventory then
         return false, "no_inventory"
     end
@@ -124,7 +138,7 @@ function addInventoryItem(id, item)
     if type(id) ~= "number" or type(item) ~= "table" then
         return false, "bad_args"
     end
-    local inventory = getInventory(id)
+    local inventory = getInventoryItems(id)
     if not inventory then
         return false, "no_inventory"
     end
@@ -148,7 +162,7 @@ function removeInventoryItem(id, index)
     if type(id) ~= "number" or type(index) ~= "number" then
         return false, "bad_args"
     end
-    local inventory = getInventory(id)
+    local inventory = getInventoryItems(id)
     if not inventory then
         return false, "no_inventory"
     end
@@ -167,7 +181,7 @@ function moveInventoryItem(id, index, newIndex)
     if type(id) ~= "number" or type(index) ~= "number" or type(newIndex) ~= "number" then
         return false, "bad_args"
     end
-    local inventory = getInventory(id)
+    local inventory = getInventoryItems(id)
     if not inventory then
         return false, "no_inventory"
     end
@@ -198,8 +212,8 @@ function transferInventoryItem(id1, id2, index1, index2)
     if type(id1) ~= "number" or type(id2) ~= "number" or type(index1) ~= "number" then
         return false, "bad_args"
     end
-    local inventory1 = getInventory(id1)
-    local inventory2 = getInventory(id2)
+    local inventory1 = getInventoryItems(id1)
+    local inventory2 = getInventoryItems(id2)
     if not inventory1 or not inventory2 then
         return false, "no_inventory"
     end

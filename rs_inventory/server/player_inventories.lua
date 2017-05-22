@@ -1,23 +1,43 @@
 local player_inventories = {}
 
+-- Возвращает id инвентаря
+function getPlayerInventory(player)
+    if not player then
+        return false
+    end
+    return player_inventories[player]
+end
+
+-- Создаёт пустой инвентарь и заполняет его стартовыми вещами
 function createPlayerInventory(player)
     if not player then
         return false, "OMG U DICK WHAT HAVE U DONE???"
     end
     local size = getDefaultPlayerInventorySize()
-    player_inventories[player] = createInventory(size)
+    local inventory = createInventory(size)
+    player_inventories[player] = inventory
+
+    -- Fill with dummy items
+    local ak = createInventoryItem("ak47")
+    local foundation = createInventoryItem("foundation", 40)
+    addInventoryItem(inventory, ak)
+    addInventoryItem(inventory, foundation)    
     return true
 end
 
+-- Отправляет игроку его инвентарь
 function sendInventoryToPlayer(player)
-    if player_inventories[player] == nil then
-        return false, "does_not_exist"
+    local inventory = getPlayerInventory(client)
+    if not inventory then
+        return false
     end
-    local inventory = getInventory(player_inventories[player])
-    triggerClientEvent(client, "onInventoryReceived", root, inventory)
+    local items = getInventoryItems(inventory)
+    return triggerClientEvent(client, "onInventoryReceived", root, items)
 end
 
-function movePlayerItem(index1, index2)
+-- Перемещение предметов внутри инвентаря
+addEvent("movePlayerItem", true)
+addEventHandler("movePlayerItem", root, function (index1, index2)
     if player_inventories[client] == nil then
         return false, "does_not_exist"
     end
@@ -30,23 +50,14 @@ function movePlayerItem(index1, index2)
         return false, "internal_error"
     end
     sendInventoryToPlayer(client)
-end
-addEvent("movePlayerItem", true)
-addEventHandler("movePlayerItem", root, movePlayerItem)
+    return true
+end)
 
-function getPlayerInventory()
-    if player_inventories[client] == nil then
+-- Возвращает инвентарь игрока
+addEvent("getClientInventory", true)
+addEventHandler("getClientInventory", root, function ()
+    if not getPlayerInventory(client) then
         createPlayerInventory(client)
     end
-    local inventory_id = player_inventories[client]
-
-    -- Fill with dummy items
-    local ak = createInventoryItem("ak47")
-    local foundation = createInventoryItem("foundation", 40)
-    addInventoryItem(inventory_id, ak)
-    addInventoryItem(inventory_id, foundation)
-
     sendInventoryToPlayer(client)
-end
-addEvent("getPlayerInventory", true)
-addEventHandler("getPlayerInventory", root, getPlayerInventory)
+end)

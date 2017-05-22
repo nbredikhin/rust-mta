@@ -29,19 +29,14 @@ function hidePlayerHotbarItem(player)
     player:removeData("hotbar_item_id")
 end
 
-addCommandHandler("hotbar", function (player)
-    if player:getData("hotbar_item_id") then
-        hidePlayerHotbarItem(player)
-    else
-        showPlayerHotbarItem(player, { id = "ak47", count = 1 })
-    end
-end)
-
 addEvent("showPlayerHotbarSlot", true)
 addEventHandler("showPlayerHotbarSlot", root, function (slot)
     if slot then
-        -- TODO: Получить item в слоте
-        local item = { id = "ak47", count = 1, ammo = 0}
+        local inventory = getPlayerInventory(client)
+        if not inventory then
+            return
+        end
+        local item = getInventoryItem(inventory, slot)
 
         showPlayerHotbarItem(client, item)
     else
