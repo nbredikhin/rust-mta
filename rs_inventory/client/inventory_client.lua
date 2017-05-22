@@ -11,6 +11,9 @@ function getItem(slotId)
     if not slotId then
         return
     end
+    if not local_inventory.items then
+        local_inventory.items = {}
+    end
     return local_inventory.items[slotId]
 end
 
