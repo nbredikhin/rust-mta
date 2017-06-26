@@ -40,6 +40,7 @@ function moveItems(slotIdFrom, slotIdTo)
         return false, "bad_arguments"
     end
 
+    local_inventory.items[slotIdTo], local_inventory.items[slotIdFrom] = local_inventory.items[slotIdFrom], local_inventory.items[slotIdTo]
     triggerServerEvent("movePlayerItem", resourceRoot, slotIdFrom, slotIdTo)
     return true
 end
