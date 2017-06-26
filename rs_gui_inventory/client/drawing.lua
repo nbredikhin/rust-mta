@@ -55,8 +55,9 @@ local function drawSlots()
         if isVisible or slot.hotbarIndex then
             local color = tocolor(30, 30, 30, 230)
 
-            local isMouseOver =  mx > slot.x and mx < slot.x + SLOT_SIZE
-                             and my > slot.y and my < slot.y + SLOT_SIZE
+            local hs = SLOT_SPACING / 2 -- Половина расстояния между слотами
+            local isMouseOver =  mx > slot.x - hs and mx < slot.x + SLOT_SIZE + hs
+                             and my > slot.y - hs and my < slot.y + SLOT_SIZE + hs
 
             if isMouseOver then
                 color = tocolor(40, 40, 40, 230)
@@ -89,7 +90,6 @@ local function drawSlots()
                 dragOffsetY = slot.y - my
             elseif not isMouseDown and draggingSlot and isMouseOver then
                 if draggingSlot.id ~= slot.id then
-                    iprint("Drag slot", draggingSlot.id, " to ", slot.id)
                     exports.rs_inventory:moveItems(draggingSlot.id, slot.id)
                 end
             end
