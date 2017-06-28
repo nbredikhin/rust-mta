@@ -39,8 +39,9 @@ function moveItems(slotIdFrom, slotIdTo)
     if type(slotIdTo) ~= "number" or type(slotIdFrom) ~= "number" then
         return false, "bad_arguments"
     end
-
+    -- Выполнить перемещение вещей на клиенте, чтобы изменения мгновенно отобразились в интерфейсе инвентаря
     local_inventory.items[slotIdTo], local_inventory.items[slotIdFrom] = local_inventory.items[slotIdFrom], local_inventory.items[slotIdTo]
+    -- После перемещения на стороне сервера игрок получит новый инвентарь
     triggerServerEvent("movePlayerItem", resourceRoot, slotIdFrom, slotIdTo)
     return true
 end

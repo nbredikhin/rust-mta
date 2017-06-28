@@ -7,6 +7,7 @@ function setVisible(visible)
     isHUDVisible = not not visible
 
     showPlayerHudComponent("all", false)
+    showPlayerHudComponent("crosshair", true)
 end
 
 function isVisible()

@@ -31,6 +31,8 @@ end
 
 addEvent("showPlayerHotbarSlot", true)
 addEventHandler("showPlayerHotbarSlot", root, function (slot)
+    hidePlayerHotbarItem(client)
+
     if slot then
         local inventory = getPlayerInventory(client)
         if not inventory then
@@ -39,7 +41,5 @@ addEventHandler("showPlayerHotbarSlot", root, function (slot)
         local item = getInventoryItem(inventory, slot)
 
         showPlayerHotbarItem(client, item)
-    else
-        hidePlayerHotbarItem(client)
     end
 end)

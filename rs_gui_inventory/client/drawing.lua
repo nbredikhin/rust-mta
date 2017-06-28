@@ -66,7 +66,7 @@ local function drawSlots()
                 color = tocolor(60, 60, 60, 230)
             end
             dxDrawRectangle(slot.x, slot.y, SLOT_SIZE, SLOT_SIZE, color)
-            -- Икнока
+            -- Иконка
             local item = exports.rs_inventory:getItem(slot.id)
             if item and slot ~= draggingSlot then
                 dxDrawImage(slot.x + ICON_SPACING, slot.y + ICON_SPACING, SLOT_SIZE - ICON_SPACING * 2,

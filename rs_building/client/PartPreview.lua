@@ -34,15 +34,15 @@ local function update(deltaTime)
 
     -- Точка, в которую смотрит камера
     local lx, ly, lz = getWorldFromScreenPosition(
-        placementScreenPosition.x, 
-        placementScreenPosition.y, 
+        placementScreenPosition.x,
+        placementScreenPosition.y,
         PLACEMENT_RANGE)
     -- Позиция камеры
     local cx, cy, cz = getCameraMatrix()
     -- Точка в мире, в которую смотрит камера
     local hit, wx, wy, wz, hitObject = processLineOfSight(
         cx, cy, cz,
-        lx, ly, lz, 
+        lx, ly, lz,
         -- Проверка столкновений
         true,   -- Мир
         false,  -- Машины
@@ -66,15 +66,15 @@ local function update(deltaTime)
         targetObject = nil
     end
     if SnapRules.hasRule(PartPreview.partName, targetPartName) then
-        local x, y, z, rotation, gx, gy, gz, direction = 
+        local x, y, z, rotation, gx, gy, gz, direction =
             SnapRules.getSnap(
-                object, 
-                PartPreview.partName, 
-                targetObject, 
-                targetPartName, 
-                wx, 
-                wy, 
-                wz, 
+                object,
+                PartPreview.partName,
+                targetObject,
+                targetPartName,
+                wx,
+                wy,
+                wz,
                 rotation)
 
         if x then
@@ -122,7 +122,7 @@ function PartPreview.showPart(name)
     local model = exports["rs_models"]:getModel(name)
     if not model then
         return false
-    end 
+    end
     -- Если предпросмотр не отображается
     if not PartPreview.partName or not object then
         -- Создать объект
@@ -132,7 +132,7 @@ function PartPreview.showPart(name)
         -- Применить шейдер
         highlightShader:applyToWorldTexture("*", object)
 
-        addEventHandler("onClientPreRender", root, update)      
+        addEventHandler("onClientPreRender", root, update)
     else
         -- Если предпросмотр уже отображается, просто меняем модель
         object.model = model
@@ -166,3 +166,15 @@ end)
 addCommandHandler("part", function(cmd, name)
     PartPreview.showPart(name)
 end)
+
+-- export
+function showBuildingPart(name)
+    if name then
+        PartPreview.showPart(name)
+    else
+        PartPreview.hidePart()
+    end
+end
+
+addEvent("showBuildingPartPreview", true)
+addEventHandler("showBuildingPartPreview", localPlayer, showBuildingPart)
