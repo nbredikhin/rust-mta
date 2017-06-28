@@ -18,6 +18,14 @@ local inventoryY
 
 local INVENTORY_HEADER = 40
 
+local LOOT_WIDTH = 3
+local LOOT_HEIGHT = 4
+
+local lootWidth
+local lootHeight
+local lootX
+local lootY
+
 local slots = {}
 
 -- Слот из которого происходит перетаскивание
@@ -25,7 +33,7 @@ local draggingSlot = nil
 local dragOffsetX = 0
 local dragOffsetY = 0
 
-local function createSlot(x, y, hotbarIndex)
+local function createSlot(x, y, hotbarIndex, isRemote, id)
     local slot = {}
 
     slot.x = x
@@ -33,7 +41,14 @@ local function createSlot(x, y, hotbarIndex)
     slot.hotbarIndex = hotbarIndex
 
     table.insert(slots, slot)
-    slot.id = #slots
+    if id then
+        slot.id = id
+    else
+        slot.id = #slots
+    end
+
+    -- Относится ли слот к чужому инвентарю
+    slot.isRemote = isRemote
 end
 
 local function drawSlots()
@@ -42,6 +57,10 @@ local function drawSlots()
         dxDrawRectangle(inventoryX - SLOT_SPACING, inventoryY - INVENTORY_HEADER, inventoryWidth + SLOT_SPACING * 2,
             inventoryHeight + INVENTORY_HEADER + SLOT_SPACING, tocolor(50, 50, 50))
         dxDrawText("INVENTORY", inventoryX, inventoryY - INVENTORY_HEADER + 5)
+
+        dxDrawRectangle(lootX - SLOT_SPACING, lootY - INVENTORY_HEADER, lootWidth + SLOT_SPACING * 2,
+            lootHeight + INVENTORY_HEADER + SLOT_SPACING, tocolor(50, 50, 50))
+        dxDrawText("LOOT", lootX, lootY - INVENTORY_HEADER + 5)
     end
     local mx, my = getCursorPosition()
     if not mx then
@@ -67,7 +86,12 @@ local function drawSlots()
             end
             dxDrawRectangle(slot.x, slot.y, SLOT_SIZE, SLOT_SIZE, color)
             -- Иконка
-            local item = exports.rs_inventory:getItem(slot.id)
+            local item
+            if slot.isRemote then
+                item = false
+            else
+                item = exports.rs_inventory:getItem(slot.id)
+            end
             if item and slot ~= draggingSlot then
                 dxDrawImage(slot.x + ICON_SPACING, slot.y + ICON_SPACING, SLOT_SIZE - ICON_SPACING * 2,
                     SLOT_SIZE - ICON_SPACING * 2, exports.rs_inventory:getItemIcon(item.id))
@@ -90,7 +114,11 @@ local function drawSlots()
                 dragOffsetY = slot.y - my
             elseif not isMouseDown and draggingSlot and isMouseOver then
                 if draggingSlot.id ~= slot.id then
-                    exports.rs_inventory:moveItems(draggingSlot.id, slot.id)
+                    if not draggingSlot.isRemote and not slot.isRemote then
+                        exports.rs_inventory:moveItems(draggingSlot.id, slot.id)
+                    else
+                        -- TODO: Перемещение между инвентарями или внутри чужого инвентаря
+                    end
                 end
             end
         else
@@ -120,7 +148,9 @@ end
 
 addEventHandler("onClientResourceStart", resourceRoot, function ()
     inventoryWidth = (SLOT_SIZE + SLOT_SPACING) * HOTBAR_SLOTS_COUNT - SLOT_SPACING
+    inventoryHeight = (SLOT_SIZE + SLOT_SPACING) * INVENTORY_HEIGHT - SLOT_SPACING
     inventoryX = screenSize.x / 2 - inventoryWidth / 2
+    inventoryY = screenSize.y / 2 - inventoryHeight / 2
     local hotbarY = screenSize.y - SLOT_SIZE - HOTBAR_OFFSET
     for i = 1, HOTBAR_SLOTS_COUNT do
         createSlot(inventoryX + (i - 1) * (SLOT_SIZE + SLOT_SPACING), hotbarY, i)
@@ -128,14 +158,28 @@ addEventHandler("onClientResourceStart", resourceRoot, function ()
 
     -- Основные слоты
     local sx = inventoryX
-    inventoryHeight = (SLOT_SIZE + SLOT_SPACING) * INVENTORY_HEIGHT - SLOT_SPACING
-    inventoryY = screenSize.y / 2 - inventoryHeight / 2
     local sy = inventoryY
     for i = 1, INVENTORY_SIZE - HOTBAR_SLOTS_COUNT do
         createSlot(sx, sy)
         sx = sx + SLOT_SIZE + SLOT_SPACING
         if i % INVENTORY_WIDTH == 0 then
             sx = inventoryX
+            sy = sy + SLOT_SIZE + SLOT_SPACING
+        end
+    end
+
+    lootWidth = (SLOT_SIZE + SLOT_SPACING) * LOOT_WIDTH - SLOT_SPACING
+    lootHeight = (SLOT_SIZE + SLOT_SPACING) * LOOT_HEIGHT - SLOT_SPACING
+    lootX = inventoryX + inventoryWidth + SLOT_SPACING * 3
+    lootY = inventoryY
+
+    sx = lootX
+    sy = lootY
+    for i = 1, LOOT_SIZE do
+        createSlot(sx, sy, nil, true, i)
+        sx = sx + SLOT_SIZE + SLOT_SPACING
+        if i % LOOT_WIDTH == 0 then
+            sx = lootX
             sy = sy + SLOT_SIZE + SLOT_SPACING
         end
     end
